@@ -1,0 +1,59 @@
+{
+  "_comment": "Карта продукции. Редактируйте этот файл. Файлы кладите в папку product_map_files/",
+  "_format": "children = подменю с кнопками, file = PDF или PNG файл",
+  "Импланты": {
+    "children": {
+      "AnyOne": {
+        "children": {
+          "Каталог": { "file": "CatalogAnyOne.pdf" },
+          "Формирователи": { "file": "ar_catalog.pdf" },
+          "Абатмант": { "file": "ar_catalog.pdf" },
+          "Прайс": { "file": "ar_catalog.pdf" }
+        }
+      },
+      "AnyRidge": {
+        "children": {
+          "Каталог": { "file": "CatalogAnyRidge.pdf" },
+          "Формирователи": { "file": "ar_catalog.pdf" },
+          "Абатмант": { "file": "ar_catalog.pdf" },
+          "Прайс": { "file": "ar_catalog.pdf" }
+        }
+      },
+      "ST": {
+        "children": {
+          "Каталог": { "file": "CatalogST.pdf" },
+          "Формирователи": { "file": "ar_catalog.pdf" },
+          "Абатмант": { "file": "ar_catalog.pdf" },
+          "Прайс": { "file": "ar_catalog.pdf" }
+        }
+      },
+      "Дополнительно": {
+        "children": {
+          "Bluediamond": {
+            "children": {
+              "Каталог": { "file": "BDCatalog.pdf" },
+              "Формирователи": { "file": "BDHealingAb.png" },
+              "Абатмант": { "file": "ar_catalog.pdf" },
+              "Прайс": { "file": "ar_catalog.pdf" }
+            }
+          },
+          "ARi": {
+            "children": {
+              "Каталог": { "file": "ARICatalog.pdf" },
+              "Формирователи": { "file": "ar_catalog.pdf" },
+              "Абатмант": { "file": "ar_catalog.pdf" },
+              "Прайс": { "file": "ar_catalog.pdf" }
+            }
+          }
+        }
+      }
+    }
+  },
+  "Прайс": {
+    "children": {
+      "Прайс лист": { "file": "PriceList.pdf" },
+      "Прайс ST": { "file": "STPrice.pdf" },
+      "Пакеты": { "file": "Package.pdf" }
+    }
+  }
+}

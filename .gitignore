@@ -1,0 +1,35 @@
+# Секреты и окружение
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Локальные данные и блокировки
+.bot.lock
+bot.log
+*.log
+megagen_bot.sqlite3
+
+# Каталог/кэш (генерируемые или тяжёлые данные — при необходимости раскомментируйте)
+# catalog.json
+# catalog_stock.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
