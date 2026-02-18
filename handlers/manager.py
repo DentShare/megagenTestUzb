@@ -10,8 +10,10 @@ from database.models import User, UserRole, Order, OrderItem, OrderStatus, Deliv
 logger = logging.getLogger("manager_catalog")
 from config import config
 from services.one_c import get_stock, get_sku
-from services.db_ops import get_user_by_telegram_id
+from services.db_ops import get_user_by_telegram_id, check_role
 from services.search_service import search_clinics
+from catalog_config import get_catalog
+from services.telegram_utils import safe_edit_text
 from keyboards.manager_kbs import (
     MenuCallback, make_categories_kb, make_lines_kb, 
     make_diameters_kb, make_items_kb, make_cart_kb, make_no_size_items_kb,
@@ -60,7 +62,7 @@ def _get_category_from_callback(callback_data: MenuCallback) -> str:
         return callback_data.category
     if callback_data.category_index is not None:
         try:
-            from catalog_data import CATALOG
+            CATALOG = get_catalog()
             all_categories = list(CATALOG.keys())
             if 0 <= callback_data.category_index < len(all_categories):
                 return all_categories[callback_data.category_index]
@@ -77,7 +79,7 @@ def _get_subcategory_from_callback(callback_data: MenuCallback) -> str:
     category = _get_category_from_callback(callback_data)
     if callback_data.subcategory_index is not None and category:
         try:
-            from catalog_data import CATALOG
+            CATALOG = get_catalog()
             if category in CATALOG:
                 all_subcategories = list(CATALOG[category].keys())
                 if 0 <= callback_data.subcategory_index < len(all_subcategories):
@@ -94,7 +96,7 @@ def _get_line_from_callback(callback_data: MenuCallback) -> str:
         return callback_data.line
     if callback_data.line_index is not None:
         try:
-            from catalog_data import CATALOG
+            CATALOG = get_catalog()
             category = _get_category_from_callback(callback_data)
             if not category or category not in CATALOG:
                 return None
@@ -124,7 +126,7 @@ def _get_product_from_callback(callback_data: MenuCallback) -> str:
     category = _get_category_from_callback(callback_data)
     if callback_data.product_index is not None and category:
         try:
-            from catalog_data import CATALOG
+            CATALOG = get_catalog()
             if category not in CATALOG:
                 return None
             cat = CATALOG[category]
@@ -188,14 +190,9 @@ def _log_catalog(user_id: int, handler: str, payload: str, callback_data: "MenuC
     logger.info(" ".join(parts))
 
 
-# Helper to check permissions
 async def is_manager(user_id: int, session: AsyncSession):
-    """Проверка прав менеджера с использованием кеша."""
-    # Админы могут тестировать любые панели
-    if user_id in config.ADMIN_IDS_LIST:
-        return True
-    user = await get_user_by_telegram_id(session, user_id, use_cache=True)
-    return user and user.role == UserRole.MANAGER and user.is_active
+    """Проверка прав менеджера (делегирует в единую check_role)."""
+    return await check_role(session, user_id, UserRole.MANAGER)
 
 @router.message(Command("menu"))
 async def cmd_menu(message: types.Message, state: FSMContext, session: AsyncSession):
@@ -368,7 +365,8 @@ async def nav_diameters_or_product_lines(callback: types.CallbackQuery, callback
         # Протетика/Лаборатория: подкатегория → линейка → тип → диаметр → длина → высота абатмента → в корзину (без выбора наименования; наименование из каталога для наряда)
         from keyboards.manager_kbs import make_prosthetics_types_for_line_kb
         subcategory = _get_subcategory_from_callback(callback_data)
-        await callback.message.edit_text(
+        await safe_edit_text(
+            callback.message,
             f"Линейка: {callback_data.line}\nВыберите угол (тип):",
             reply_markup=make_prosthetics_types_for_line_kb(callback_data.category, subcategory, callback_data.line)
         )
@@ -376,14 +374,16 @@ async def nav_diameters_or_product_lines(callback: types.CallbackQuery, callback
         from keyboards.manager_kbs import make_products_for_line_kb
         show_all = callback_data.action == "show_all_products"
         subcategory = _get_subcategory_from_callback(callback_data)
-        await callback.message.edit_text(
+        await safe_edit_text(
+            callback.message,
             f"Линейка: {callback_data.line}\nВыберите товар:",
             reply_markup=make_products_for_line_kb(callback_data.category, callback_data.line, show_all=show_all, subcategory=subcategory)
         )
     else:
         # Для имплантов - показываем диаметры
-        await callback.message.edit_text(
-            f"Линейка: {callback_data.line}\nВыберите:", 
+        await safe_edit_text(
+            callback.message,
+            f"Линейка: {callback_data.line}\nВыберите:",
             reply_markup=make_diameters_kb(callback_data.category, callback_data.line)
         )
     await callback.answer()
@@ -441,7 +441,7 @@ async def nav_products_or_items(callback: types.CallbackQuery, callback_data: Me
 @router.callback_query(MenuCallback.filter((F.level == 3) & (F.product != None) & (F.product_type == None)))
 async def nav_product_type(callback: types.CallbackQuery, callback_data: MenuCallback):
     """Выбор типа для товара протетики/лаборатории/наборов после выбора линейки"""
-    from catalog_data import CATALOG
+    CATALOG = get_catalog()
     
     # Восстанавливаем product из индекса, если нужно
     product = _get_product_from_callback(callback_data)
@@ -469,7 +469,7 @@ async def nav_prosthetics_diameter_selected(callback: types.CallbackQuery, callb
     """Протетика/Лаборатория: после выбора диаметра (без товара) — показываем длину (высота десны)."""
     if callback_data.category not in ["Протетика", "Лаборатория"]:
         return
-    from catalog_data import CATALOG
+    CATALOG = get_catalog()
     from keyboards.manager_kbs import make_prosthetics_gum_height_for_line_kb
     _log_catalog(callback.from_user.id, "nav_prosthetics_diameter_selected", callback.data,
                  callback_data=callback_data, show="gum_heights")
@@ -568,9 +568,9 @@ async def nav_prosthetics_gum_height(callback: types.CallbackQuery, callback_dat
     await callback.answer()
 
 @router.callback_query(MenuCallback.filter(F.action == "select_abutment_height"))
-async def nav_prosthetics_abutment_height(callback: types.CallbackQuery, callback_data: MenuCallback):
-    """Выбор высоты абатмента для протетики после выбора высоты десны."""
-    from catalog_data import CATALOG
+async def nav_prosthetics_abutment_height(callback: types.CallbackQuery, callback_data: MenuCallback, state: FSMContext):
+    """Выбор высоты абатмента для протетики после выбора высоты десны. Если уровня нет — сразу в корзину (height=None)."""
+    CATALOG = get_catalog()
     from keyboards.manager_kbs import make_prosthetics_abutment_height_for_line_kb
 
     category = _get_category_from_callback(callback_data)
@@ -598,20 +598,56 @@ async def nav_prosthetics_abutment_height(callback: types.CallbackQuery, callbac
                     level2 = level1
                 ld = _catalog_get(level2, length)
                 if isinstance(ld, dict):
-                    for height, info in ld.items():
-                        if isinstance(info, dict) and info.get("sku"):
-                            try:
-                                h_f = float(height)
-                                if getattr(config, "USE_CATALOG_STOCK", False):
-                                    try:
-                                        from services.catalog_stock import get_qty
-                                        stock[h_f] = stock.get(h_f, 0) + get_qty(info["sku"])
-                                    except Exception:
+                    if ld.get("sku") is not None:
+                        # Под длиной лежит продукт без уровня «высота абатмента» — не показываем экран выбора высоты
+                        pass
+                    else:
+                        for height, info in ld.items():
+                            if isinstance(info, dict) and info.get("sku"):
+                                try:
+                                    h_f = float(height)
+                                    if getattr(config, "USE_CATALOG_STOCK", False):
+                                        try:
+                                            from services.catalog_stock import get_qty
+                                            stock[h_f] = stock.get(h_f, 0) + get_qty(info["sku"])
+                                        except Exception:
+                                            stock[h_f] = stock.get(h_f, 0) + 10
+                                    else:
                                         stock[h_f] = stock.get(h_f, 0) + 10
-                                else:
-                                    stock[h_f] = stock.get(h_f, 0) + 10
-                            except (ValueError, TypeError):
-                                pass
+                                except (ValueError, TypeError):
+                                    pass
+        if not stock:
+            # Нет высот абатмента у этой позиции — сразу в корзину с height=None
+            product_data = None
+            if isinstance(line_data, dict):
+                for _pk, product_line_data in line_data.items():
+                    if _pk == "no_size" or not isinstance(product_line_data, dict):
+                        continue
+                    pd = product_line_data
+                    level1 = _catalog_get(pd, pt) or _catalog_get(pd, diam)
+                    if not isinstance(level1, dict):
+                        continue
+                    level2 = _catalog_get(level1, diam) if pt is not None else level1
+                    if not isinstance(level2, dict):
+                        level2 = level1
+                    res = _catalog_get(level2, length)
+                    if res is not None and isinstance(res, dict) and res.get("sku"):
+                        product_data = res
+                        break
+            if product_data:
+                await state.update_data(current_selection={
+                    'category': category, 'line': line, 'product': None, 'product_type': callback_data.product_type,
+                    'diameter': callback_data.diameter, 'length': callback_data.length, 'height': None,
+                    'name': product_data.get("name", ""), 'sku': product_data.get("sku", ""),
+                    'unit': product_data.get("unit", "шт"), 'no_size': False
+                })
+                await state.set_state(ManagerOrderState.waiting_for_quantity)
+                await callback.message.answer(
+                    f"Выберите количество для {product_data.get('name', '')}:",
+                    reply_markup=make_quantity_kb(max_quantity=20)
+                )
+            await callback.answer()
+            return
         await callback.message.edit_text(
             f"Линейка: {line}\nУгол: {callback_data.product_type}°\nДиаметр: Ø{callback_data.diameter}\n"
             f"Длина (высота десны): {callback_data.length} мм\nВыберите длину абатмента:",
@@ -652,7 +688,7 @@ async def nav_prosthetics_abutment_height(callback: types.CallbackQuery, callbac
                                     stock[height] = 0
                             else:
                                 stock[height] = 10
-        elif not callback_data.product_type:
+        elif callback_data.product_type is None:
             diam_level = _catalog_get(product_data, callback_data.diameter)
             if diam_level is not None:
                 heights_data = _catalog_get(diam_level, callback_data.length)
@@ -719,9 +755,37 @@ async def handle_noop(callback: types.CallbackQuery):
     _log_catalog(callback.from_user.id, "handle_noop", callback.data, show="noop")
     await callback.answer("Нет в наличии", show_alert=True)
 
+async def _show_replacement_confirm(
+    callback: types.CallbackQuery, state: FSMContext, session: AsyncSession, product_data: dict
+) -> None:
+    """Показать подтверждение замены (режим подбора замены из каталога)."""
+    data = await state.get_data()
+    item_id = data.get("replacement_item_id")
+    if not item_id:
+        return
+    stmt = select(OrderItem).where(OrderItem.id == item_id)
+    result = await session.execute(stmt)
+    order_item = result.scalar_one_or_none()
+    qty = order_item.quantity if order_item else 1
+    name = product_data.get("name", "")
+    from services.telegram_utils import escape_markdown
+    text = (
+        f"🔄 *Подбор замены*\n\n"
+        f"Товар для замены: *{escape_markdown(name)}*\n"
+        f"В заказе: {qty} шт.\n\n"
+        "Подтвердите замену этой позиции."
+    )
+    kb = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="✅ Подтвердить замену", callback_data="manager:confirm_replacement")],
+        [InlineKeyboardButton(text="❌ Отмена", callback_data="manager:cancel_replacement")]
+    ])
+    await callback.message.answer(text, parse_mode="Markdown", reply_markup=kb)
+    await state.set_state(ManagerOrderState.waiting_for_quantity)
+
+
 @router.callback_query(MenuCallback.filter(F.action == "add_to_cart"))
-async def prompt_quantity(callback: types.CallbackQuery, callback_data: MenuCallback, state: FSMContext):
-    from catalog_data import CATALOG
+async def prompt_quantity(callback: types.CallbackQuery, callback_data: MenuCallback, state: FSMContext, session: AsyncSession):
+    CATALOG = get_catalog()
     
     _log_catalog(callback.from_user.id, "add_to_cart", callback.data, callback_data=callback_data, show="prompt_quantity")
     # Протетика/Лаборатория: поток без выбора товара — наименование из каталога (как у имплантов) для наряда/склада/курьера
@@ -731,30 +795,47 @@ async def prompt_quantity(callback: types.CallbackQuery, callback_data: MenuCall
     line = _get_line_from_callback(callback_data)
     if (category in ["Протетика", "Лаборатория"] and not callback_data.product and
             pt_key is not None and callback_data.diameter is not None and
-            callback_data.length is not None and callback_data.height is not None):
+            callback_data.length is not None):
+        # height может быть None — если в протетике нет параметра «высота абатмента»
         line_data = CATALOG.get(category, {}).get(subcategory, {}).get(line, {}) if subcategory else {}
         product_data = None
         if isinstance(line_data, dict):
             def _find_product(pd, pt, d, l, h):
-                # Структура с product_type: product -> type -> diameter -> length -> height
+                # С высотой абатмента: product -> type -> diameter -> length -> height
+                if h is not None:
+                    if pt is not None:
+                        l1 = _catalog_get(pd, pt)
+                        if l1 is not None and isinstance(l1, dict):
+                            l2 = _catalog_get(l1, d)
+                            if l2 is not None and isinstance(l2, dict):
+                                l3 = _catalog_get(l2, l)
+                                if l3 is not None and isinstance(l3, dict):
+                                    res = _catalog_get(l3, h)
+                                    if res is not None:
+                                        return res
+                    l1 = _catalog_get(pd, d)
+                    if l1 is None or not isinstance(l1, dict):
+                        return None
+                    l2 = _catalog_get(l1, l)
+                    if l2 is None or not isinstance(l2, dict):
+                        return None
+                    return _catalog_get(l2, h)
+                # Без высоты абатмента: product -> type -> diameter -> length (= product_data)
                 if pt is not None:
                     l1 = _catalog_get(pd, pt)
                     if l1 is not None and isinstance(l1, dict):
                         l2 = _catalog_get(l1, d)
                         if l2 is not None and isinstance(l2, dict):
-                            l3 = _catalog_get(l2, l)
-                            if l3 is not None and isinstance(l3, dict):
-                                res = _catalog_get(l3, h)
-                                if res is not None:
-                                    return res
-                # Структура без product_type (когда type=0): product -> diameter -> length -> height
+                            res = _catalog_get(l2, l)
+                            if res is not None and isinstance(res, dict) and res.get("sku"):
+                                return res
                 l1 = _catalog_get(pd, d)
                 if l1 is None or not isinstance(l1, dict):
                     return None
-                l2 = _catalog_get(l1, l)
-                if l2 is None or not isinstance(l2, dict):
-                    return None
-                return _catalog_get(l2, h)
+                res = _catalog_get(l1, l)
+                if res is not None and isinstance(res, dict) and res.get("sku"):
+                    return res
+                return None
             for product_key, product_line_data in line_data.items():
                 if product_key == "no_size" or not isinstance(product_line_data, dict):
                     continue
@@ -763,7 +844,7 @@ async def prompt_quantity(callback: types.CallbackQuery, callback_data: MenuCall
                     pt_key,
                     callback_data.diameter,
                     callback_data.length,
-                    callback_data.height
+                    callback_data.height if callback_data.height is not None else None
                 )
                 if product_data:
                     break
@@ -773,9 +854,10 @@ async def prompt_quantity(callback: types.CallbackQuery, callback_data: MenuCall
                 callback.from_user.id, callback_data.product_type, callback_data.diameter,
                 callback_data.length, callback_data.height
             )
+            height_suffix = f" А{callback_data.height}" if callback_data.height is not None else ""
             product_data = {
-                "name": f"{line} Ø{callback_data.diameter} Д{callback_data.length} А{callback_data.height}",
-                "sku": f"P-{callback_data.diameter}-{callback_data.length}-{callback_data.height}",
+                "name": f"{line} Ø{callback_data.diameter} Д{callback_data.length}{height_suffix}",
+                "sku": f"P-{callback_data.diameter}-{callback_data.length}-{callback_data.height}" if callback_data.height is not None else f"P-{callback_data.diameter}-{callback_data.length}",
                 "unit": "шт"
             }
         logger.info(
@@ -795,6 +877,10 @@ async def prompt_quantity(callback: types.CallbackQuery, callback_data: MenuCall
             'unit': product_data.get("unit", "шт"),
             'no_size': False
         })
+        if (await state.get_data()).get("replacement_item_id"):
+            await _show_replacement_confirm(callback, state, session, product_data)
+            await callback.answer()
+            return
         await state.set_state(ManagerOrderState.waiting_for_quantity)
         await callback.message.answer(
             f"Выберите количество для {product_data.get('name', '')}:",
@@ -864,6 +950,10 @@ async def prompt_quantity(callback: types.CallbackQuery, callback_data: MenuCall
             'unit': product_data.get("unit", "шт"),
             'no_size': True
         })
+        if (await state.get_data()).get("replacement_item_id"):
+            await _show_replacement_confirm(callback, state, session, product_data)
+            await callback.answer()
+            return
         await callback.message.answer(
             f"Выберите количество для {product_data['name']}:",
             reply_markup=make_quantity_kb(max_quantity=20)
@@ -871,11 +961,12 @@ async def prompt_quantity(callback: types.CallbackQuery, callback_data: MenuCall
     elif category in ["Протетика", "Лаборатория"]:
         # Восстанавливаем product из индекса, если нужно
         product = _get_product_from_callback(callback_data)
-        if not product or not callback_data.height:
+        if not product:
             await callback.answer("Ошибка: данные товара неполные", show_alert=True)
             return
+        # height может быть None — позиции без параметра «высота абатмента»
 
-        # Протетика/Лаборатория: category -> Category (subcategory) -> Sub_category (line) -> product -> type -> diameter -> gum_height -> abutment_height
+        # Протетика/Лаборатория: category -> Category (subcategory) -> Sub_category (line) -> product -> type -> diameter -> gum_height -> [abutment_height]
         product_data = None
         line_data = CATALOG.get(category, {}).get(subcategory, {}).get(line, {}) if subcategory else {}
         product_line_data = line_data.get(product) if isinstance(line_data, dict) and product in line_data else None
@@ -888,13 +979,19 @@ async def prompt_quantity(callback: types.CallbackQuery, callback_data: MenuCall
                     if diam_level is not None:
                         length_level = _catalog_get(diam_level, callback_data.length)
                         if length_level is not None:
-                            product_data = _catalog_get(length_level, callback_data.height)
+                            if callback_data.height is not None:
+                                product_data = _catalog_get(length_level, callback_data.height)
+                            elif isinstance(length_level, dict) and length_level.get("sku"):
+                                product_data = length_level
             elif callback_data.diameter is not None:
                 diam_level = _catalog_get(product_line_data, callback_data.diameter)
                 if diam_level is not None:
                     length_level = _catalog_get(diam_level, callback_data.length)
                     if length_level is not None:
-                        product_data = _catalog_get(length_level, callback_data.height)
+                        if callback_data.height is not None:
+                            product_data = _catalog_get(length_level, callback_data.height)
+                        elif isinstance(length_level, dict) and length_level.get("sku"):
+                            product_data = length_level
         
         if not product_data:
             logger.warning(
@@ -902,10 +999,11 @@ async def prompt_quantity(callback: types.CallbackQuery, callback_data: MenuCall
                 callback.from_user.id, product, callback_data.line, callback_data.product_type,
                 callback_data.diameter, callback_data.length, callback_data.height
             )
-            type_str = f" {callback_data.product_type}" if callback_data.product_type else ""
+            type_str = f" {callback_data.product_type}" if callback_data.product_type is not None else ""
+            height_suffix = f" А{callback_data.height}" if callback_data.height is not None else ""
             product_data = {
-                "name": f"{product}{type_str} Ø{callback_data.diameter} Д{callback_data.length} А{callback_data.height}",
-                "sku": f"{product[:3].upper()}-{callback_data.diameter}-{callback_data.length}-{callback_data.height}",
+                "name": f"{product}{type_str} Ø{callback_data.diameter} Д{callback_data.length}{height_suffix}",
+                "sku": f"{product[:3].upper()}-{callback_data.diameter}-{callback_data.length}-{callback_data.height}" if callback_data.height is not None else f"{product[:3].upper()}-{callback_data.diameter}-{callback_data.length}",
                 "unit": "шт"
             }
         
@@ -926,6 +1024,10 @@ async def prompt_quantity(callback: types.CallbackQuery, callback_data: MenuCall
             'unit': product_data.get("unit", "шт"),
             'no_size': False
         })
+        if (await state.get_data()).get("replacement_item_id"):
+            await _show_replacement_confirm(callback, state, session, product_data)
+            await callback.answer()
+            return
         await callback.message.answer(
             f"Выберите количество для {product_data['name']}:",
             reply_markup=make_quantity_kb(max_quantity=20)
@@ -970,6 +1072,10 @@ async def prompt_quantity(callback: types.CallbackQuery, callback_data: MenuCall
         if diam_body is not None:
             sel['diameter_body'] = diam_body
         await state.update_data(current_selection=sel)
+        if (await state.get_data()).get("replacement_item_id"):
+            await _show_replacement_confirm(callback, state, session, product_data)
+            await callback.answer()
+            return
         await callback.message.answer(
             f"Выберите количество для {product_data['name']}:",
             reply_markup=make_quantity_kb(max_quantity=20)
@@ -1656,10 +1762,195 @@ async def manager_order_detail(callback: types.CallbackQuery, session: AsyncSess
     
     text += "\n*Товары:*\n"
     for item in order.items or []:
-        text += f"• {item.item_name} — {item.quantity} шт\n"
+        name = (item.replacement_name or item.item_name) if getattr(item, "replacement_name", None) else item.item_name
+        text += f"• {name} — {item.quantity} шт\n"
     
     kb = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="⬅ К списку заказов", callback_data="manager:orders")]
     ])
     await callback.message.edit_text(text, parse_mode="Markdown", reply_markup=kb)
+    await callback.answer()
+
+
+# --- Замены товаров (склад указал «нет в наличии», менеджер подбирает замену) ---
+
+@router.callback_query(F.data == "manager:replacements")
+async def manager_replacements_list(callback: types.CallbackQuery, session: AsyncSession):
+    """Список заказов, в которых есть товары без замены (need_replacement=True, replacement_sku пусто)."""
+    if not await is_manager(callback.from_user.id, session):
+        await callback.answer("Доступ запрещен", show_alert=True)
+        return
+    manager_user = await get_user_by_telegram_id(session, callback.from_user.id, use_cache=True)
+    if not manager_user:
+        await callback.answer("Ошибка: пользователь не найден", show_alert=True)
+        return
+    from sqlalchemy.orm import selectinload
+    from sqlalchemy import and_
+    # Заказы текущего менеджера, у которых есть хотя бы один item с need_replacement=True и без replacement_sku
+    subq = select(OrderItem.order_id).where(
+        and_(
+            OrderItem.need_replacement == True,
+            OrderItem.replacement_sku.is_(None),
+        )
+    )
+    stmt = (
+        select(Order)
+        .options(selectinload(Order.clinic), selectinload(Order.items))
+        .where(Order.manager_id == manager_user.id, Order.id.in_(subq))
+        .order_by(Order.created_at.desc())
+    )
+    result = await session.execute(stmt)
+    orders = result.scalars().all()
+    if not orders:
+        await callback.message.edit_text(
+            "🔄 *Замены товаров*\n\nНет заказов с запросами на замену от склада.",
+            parse_mode="Markdown",
+            reply_markup=InlineKeyboardMarkup(inline_keyboard=[
+                [InlineKeyboardButton(text="⬅ В меню", callback_data="manager:main")]
+            ])
+        )
+        await callback.answer()
+        return
+    rows = []
+    for o in orders:
+        rows.append([InlineKeyboardButton(
+            text=f"📦 Заказ #{o.id} — {o.clinic.name if o.clinic else '—'}",
+            callback_data=f"manager:replace_order:{o.id}"
+        )])
+    rows.append([InlineKeyboardButton(text="⬅ В меню", callback_data="manager:main")])
+    await callback.message.edit_text(
+        "🔄 *Замены товаров*\n\nВыберите заказ:",
+        parse_mode="Markdown",
+        reply_markup=InlineKeyboardMarkup(inline_keyboard=rows)
+    )
+    await callback.answer()
+
+
+@router.callback_query(F.data.startswith("manager:replace_order:"))
+async def manager_replace_order_detail(callback: types.CallbackQuery, session: AsyncSession):
+    """Детали заказа для подбора замен: список товаров с need_replacement без replacement_sku."""
+    if not await is_manager(callback.from_user.id, session):
+        await callback.answer("Доступ запрещен", show_alert=True)
+        return
+    try:
+        order_id = int(callback.data.split(":")[-1])
+    except (ValueError, IndexError):
+        await callback.answer("Ошибка", show_alert=True)
+        return
+    from sqlalchemy.orm import selectinload
+    stmt = (
+        select(Order)
+        .options(selectinload(Order.clinic), selectinload(Order.items))
+        .where(Order.id == order_id)
+    )
+    result = await session.execute(stmt)
+    order = result.scalar_one_or_none()
+    if not order:
+        await callback.answer("Заказ не найден", show_alert=True)
+        return
+    manager_user = await get_user_by_telegram_id(session, callback.from_user.id, use_cache=True)
+    if not manager_user or order.manager_id != manager_user.id:
+        await callback.answer("Доступ запрещен", show_alert=True)
+        return
+    need_replace = [i for i in (order.items or []) if getattr(i, "need_replacement", False) and not getattr(i, "replacement_sku", None)]
+    if not need_replace:
+        await callback.message.edit_text(
+            "🔄 По этому заказу замены уже подобраны.",
+            reply_markup=InlineKeyboardMarkup(inline_keyboard=[
+                [InlineKeyboardButton(text="⬅ К заменам", callback_data="manager:replacements")],
+                [InlineKeyboardButton(text="⬅ В меню", callback_data="manager:main")]
+            ])
+        )
+        await callback.answer()
+        return
+    text = f"📦 *Заказ #{order.id}* — {order.clinic.name if order.clinic else '—'}\n\n*Товары без замены:*\n"
+    for item in need_replace:
+        text += f"• {item.item_name} — {item.quantity} шт.\n"
+    rows = []
+    for item in need_replace:
+        name_short = (item.item_name or "")[:36]
+        rows.append([InlineKeyboardButton(
+            text=f"🔄 Подобрать: {name_short}",
+            callback_data=f"manager:start_replace:{item.id}"
+        )])
+    rows.append([InlineKeyboardButton(text="⬅ К заменам", callback_data="manager:replacements")])
+    rows.append([InlineKeyboardButton(text="⬅ В меню", callback_data="manager:main")])
+    await callback.message.edit_text(text, parse_mode="Markdown", reply_markup=InlineKeyboardMarkup(inline_keyboard=rows))
+    await callback.answer()
+
+
+@router.callback_query(F.data.startswith("manager:start_replace:"))
+async def manager_start_replace(callback: types.CallbackQuery, state: FSMContext, session: AsyncSession):
+    """Начать подбор замены: открыть каталог, менеджер выбирает товар из каталога."""
+    if not await is_manager(callback.from_user.id, session):
+        await callback.answer("Доступ запрещен", show_alert=True)
+        return
+    try:
+        item_id = int(callback.data.split(":")[-1])
+    except (ValueError, IndexError):
+        await callback.answer("Ошибка", show_alert=True)
+        return
+    await state.update_data(replacement_item_id=item_id)
+    await state.set_state(ManagerOrderState.browsing)
+    await callback.message.edit_text(
+        "🔄 *Подбор замены*\n\nВыберите товар из каталога, на который заменить позицию:",
+        parse_mode="Markdown",
+        reply_markup=make_categories_kb()
+    )
+    await callback.answer()
+
+
+@router.callback_query(F.data == "manager:confirm_replacement", ManagerOrderState.waiting_for_quantity)
+async def manager_confirm_replacement(callback: types.CallbackQuery, state: FSMContext, session: AsyncSession):
+    """Подтвердить замену: записать выбранный из каталога товар в позицию заказа."""
+    if not await is_manager(callback.from_user.id, session):
+        await callback.answer("Доступ запрещен", show_alert=True)
+        return
+    data = await state.get_data()
+    item_id = data.get("replacement_item_id")
+    current = data.get("current_selection")
+    if not item_id or not current:
+        await callback.answer("Сессия устарела. Начните подбор замены снова из раздела «Замены».", show_alert=True)
+        await state.clear()
+        return
+    sku = current.get("sku") or ""
+    name = current.get("name") or ""
+    stmt = select(OrderItem).where(OrderItem.id == item_id)
+    result = await session.execute(stmt)
+    item = result.scalar_one_or_none()
+    if not item:
+        await callback.answer("Позиция заказа не найдена", show_alert=True)
+        await state.clear()
+        return
+    item.replacement_sku = sku
+    item.replacement_name = name
+    await session.commit()
+    await state.clear()
+    from services.telegram_utils import escape_markdown
+    await callback.message.edit_text(
+        f"✅ Замена подобрана: *{escape_markdown(name)}* ({escape_markdown(sku)})\n\nСклад увидит замену в заказе.",
+        parse_mode="Markdown",
+        reply_markup=InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text="⬅ К заменам", callback_data="manager:replacements")],
+            [InlineKeyboardButton(text="⬅ В меню", callback_data="manager:main")]
+        ])
+    )
+    await callback.answer()
+
+
+@router.callback_query(F.data == "manager:cancel_replacement")
+async def manager_cancel_replacement(callback: types.CallbackQuery, state: FSMContext, session: AsyncSession):
+    """Отменить подбор замены и вернуться к списку замен."""
+    if not await is_manager(callback.from_user.id, session):
+        await callback.answer("Доступ запрещен", show_alert=True)
+        return
+    await state.update_data(replacement_item_id=None, current_selection=None)
+    await state.set_state(ManagerOrderState.browsing)
+    await callback.message.edit_text(
+        "🔄 Подбор замены отменён.",
+        reply_markup=InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text="⬅ К заменам", callback_data="manager:replacements")],
+            [InlineKeyboardButton(text="⬅ В меню", callback_data="manager:main")]
+        ])
+    )
     await callback.answer()

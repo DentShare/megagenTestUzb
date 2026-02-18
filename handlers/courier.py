@@ -8,15 +8,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.models import User, UserRole, Order, OrderStatus, DeliveryType, Clinic
 from config import config
-from services.db_ops import get_user_by_telegram_id
+from services.db_ops import get_user_by_telegram_id, check_role
 from services.routing import (
     optimize_route_with_clusters,
     generate_yandex_maps_url,
     haversine_distance,
 )
 from keyboards.courier_kbs import (
-    get_courier_reply_kb, get_route_action_kb, get_delivery_kb, 
-    get_single_orders_kb, get_combined_delivery_kb
+    get_courier_reply_kb, get_route_action_kb, get_delivery_kb,
+    get_single_orders_kb, get_combined_delivery_kb, get_courier_select_orders_kb,
 )
 from states.courier_states import CourierState
 
@@ -26,32 +26,127 @@ MAX_RADIUS_KM = 50
 router = Router()
 
 async def is_courier(user_id: int, session: AsyncSession) -> bool:
-    """Проверка прав курьера с использованием кеша."""
-    # Админы могут тестировать любые панели
-    if user_id in config.ADMIN_IDS_LIST:
-        return True
-    user = await get_user_by_telegram_id(session, user_id, use_cache=True)
-    return user and user.role == UserRole.COURIER and user.is_active
+    """Проверка прав курьера (делегирует в единую check_role)."""
+    return await check_role(session, user_id, UserRole.COURIER)
 
-@router.callback_query(F.data == "courier:find_route")
-async def courier_menu_find_route(callback: types.CallbackQuery, session: AsyncSession):
-    """Запрос геолокации для поиска маршрута"""
+@router.callback_query(F.data == "courier:select_orders")
+async def courier_select_orders(callback: types.CallbackQuery, state: FSMContext, session: AsyncSession):
+    """Показать список заказов готовых к выдаче — курьер выбирает, какие доставит."""
     if not await is_courier(callback.from_user.id, session):
         await callback.answer("Доступ запрещен", show_alert=True)
         return
-    
-    await callback.message.edit_text("Панель курьера. Отправьте геопозицию для поиска заказов.")
-    await callback.message.answer("Нажмите кнопку ниже для отправки геолокации:", 
-                                  reply_markup=get_courier_reply_kb())
+    stmt = (
+        select(Order)
+        .options(selectinload(Order.clinic))
+        .where(
+            Order.status == OrderStatus.READY_FOR_PICKUP,
+            Order.delivery_type == DeliveryType.COURIER
+        )
+        .order_by(Order.is_urgent.desc(), Order.created_at.asc())
+    )
+    result = await session.execute(stmt)
+    orders = result.scalars().all()
+    if not orders:
+        await callback.message.edit_text(
+            "Нет заказов, готовых к выдаче (курьерская доставка).",
+            reply_markup=None
+        )
+        await callback.answer()
+        return
+    await state.update_data(selected_order_ids=[])
+    await state.set_state(CourierState.selecting_orders)
+    text = (
+        "📦 *Выберите заказы для доставки*\n\n"
+        "Нажмите на заказ, чтобы добавить или убрать из маршрута. "
+        "Затем нажмите «Построить маршрут» и отправьте геолокацию."
+    )
+    await callback.message.edit_text(
+        text,
+        reply_markup=get_courier_select_orders_kb(orders, []),
+        parse_mode="Markdown"
+    )
     await callback.answer()
+
+
+@router.callback_query(F.data.startswith("courier:toggle_order:"), CourierState.selecting_orders)
+async def courier_toggle_order(callback: types.CallbackQuery, state: FSMContext, session: AsyncSession):
+    """Добавить или убрать заказ из выбранных."""
+    if not await is_courier(callback.from_user.id, session):
+        await callback.answer("Доступ запрещен", show_alert=True)
+        return
+    try:
+        order_id = int(callback.data.split(":")[-1])
+    except (ValueError, IndexError):
+        await callback.answer("Ошибка", show_alert=True)
+        return
+    data = await state.get_data()
+    selected = list(data.get("selected_order_ids") or [])
+    if order_id in selected:
+        selected = [x for x in selected if x != order_id]
+    else:
+        selected.append(order_id)
+    await state.update_data(selected_order_ids=selected)
+    stmt = (
+        select(Order)
+        .options(selectinload(Order.clinic))
+        .where(
+            Order.status == OrderStatus.READY_FOR_PICKUP,
+            Order.delivery_type == DeliveryType.COURIER
+        )
+        .order_by(Order.is_urgent.desc(), Order.created_at.asc())
+    )
+    result = await session.execute(stmt)
+    orders = result.scalars().all()
+    text = (
+        "📦 *Выберите заказы для доставки*\n\n"
+        f"Выбрано: {len(selected)} зак." + (f" — #{', #'.join(map(str, sorted(selected)))}" if selected else "") + "\n\n"
+        "Нажмите «Построить маршрут» и отправьте геолокацию."
+    )
+    await callback.message.edit_text(
+        text,
+        reply_markup=get_courier_select_orders_kb(orders, selected),
+        parse_mode="Markdown"
+    )
+    await callback.answer()
+
+
+@router.callback_query(F.data == "courier:build_route", CourierState.selecting_orders)
+async def courier_build_route(callback: types.CallbackQuery, state: FSMContext, session: AsyncSession):
+    """Переход к запросу геолокации по выбранным заказам."""
+    if not await is_courier(callback.from_user.id, session):
+        await callback.answer("Доступ запрещен", show_alert=True)
+        return
+    data = await state.get_data()
+    selected = data.get("selected_order_ids") or []
+    if not selected:
+        await callback.answer("Сначала выберите хотя бы один заказ", show_alert=True)
+        return
+    await state.set_state(CourierState.waiting_location)
+    await callback.message.edit_text(
+        f"📍 Отправьте геолокацию для построения маршрута по {len(selected)} выбранным заказам."
+    )
+    await callback.message.answer("Нажмите кнопку для отправки геолокации:", reply_markup=get_courier_reply_kb())
+    await callback.answer()
+
+
+@router.callback_query(F.data == "courier:back")
+async def courier_back(callback: types.CallbackQuery, state: FSMContext, session: AsyncSession):
+    """Назад в главное меню курьера."""
+    if not await is_courier(callback.from_user.id, session):
+        await callback.answer("Доступ запрещен", show_alert=True)
+        return
+    await state.clear()
+    from keyboards.courier_kbs import get_courier_menu_kb
+    await callback.message.edit_text("Панель курьера. Выберите действие:", reply_markup=get_courier_menu_kb())
+    await callback.answer()
+
 
 @router.message(Command("courier"))
 async def cmd_courier(message: types.Message, session: AsyncSession):
     if not await is_courier(message.from_user.id, session):
         return
-    
-    await message.answer("Панель курьера. Отправьте геопозицию для поиска заказов.", 
-                         reply_markup=get_courier_reply_kb())
+    from keyboards.courier_kbs import get_courier_menu_kb
+    await message.answer("Панель курьера. Выберите заказы для доставки, затем отправьте геолокацию.", reply_markup=get_courier_menu_kb())
 
 @router.message(F.location)
 async def process_location_search(message: types.Message, state: FSMContext, session: AsyncSession):
@@ -60,43 +155,57 @@ async def process_location_search(message: types.Message, state: FSMContext, ses
 
     lat = message.location.latitude
     lon = message.location.longitude
-    # Find orders ready for pickup assigned to courier delivery
-    # Ideally, we should filter by city or region, but we use simple radius logic here.
-    stmt = (
-        select(Order)
-        .options(selectinload(Order.clinic))
-        .where(
-            Order.status == OrderStatus.READY_FOR_PICKUP,
-            Order.delivery_type == DeliveryType.COURIER
+    data = await state.get_data()
+    selected_ids = data.get("selected_order_ids") or []
+
+    if selected_ids:
+        # Курьер заранее выбрал заказы — строим маршрут только по ним
+        stmt = (
+            select(Order)
+            .options(selectinload(Order.clinic))
+            .where(
+                Order.id.in_(selected_ids),
+                Order.status == OrderStatus.READY_FOR_PICKUP,
+                Order.delivery_type == DeliveryType.COURIER
+            )
         )
-    )
-    result = await session.execute(stmt)
-    orders = result.scalars().all()
-    
+        result = await session.execute(stmt)
+        orders = result.scalars().all()
+        await state.update_data(selected_order_ids=[])
+    else:
+        # Старое поведение: все заказы в радиусе
+        stmt = (
+            select(Order)
+            .options(selectinload(Order.clinic))
+            .where(
+                Order.status == OrderStatus.READY_FOR_PICKUP,
+                Order.delivery_type == DeliveryType.COURIER
+            )
+        )
+        result = await session.execute(stmt)
+        orders = result.scalars().all()
+
     if not orders:
         await message.answer("Нет заказов, готовых к выдаче (курьерская доставка).")
         return
 
-    # Prepare data for routing and filter by radius
+    # Prepare data for routing; for pre-selected orders skip radius filter
     orders_map = []
     filtered_count = 0
     for o in orders:
-        # Calculate distance from courier location to clinic
         distance = haversine_distance(lat, lon, o.clinic.geo_lat, o.clinic.geo_lon)
-        
-        # Filter by radius (only include orders within MAX_RADIUS_KM)
-        if distance <= MAX_RADIUS_KM:
+        if selected_ids or distance <= MAX_RADIUS_KM:
             orders_map.append({
                 'id': o.id,
                 'lat': o.clinic.geo_lat,
                 'lon': o.clinic.geo_lon,
                 'clinic_name': o.clinic.name,
                 'distance': distance,
-                'obj': o # Reference to object
+                'obj': o
             })
         else:
             filtered_count += 1
-    
+
     if not orders_map:
         if filtered_count > 0:
             await message.answer(

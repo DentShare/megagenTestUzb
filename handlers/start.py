@@ -76,7 +76,7 @@ async def cmd_start(message: types.Message, session: AsyncSession):
                 )
             except Exception as e:
                 # Log error if admin cannot be reached
-                logger.error(f"Failed to notify admin {admin_id}: {e}", exc_info=True)
+                logger.error("Failed to notify admin %s: %s", admin_id, e, exc_info=True)
                 
     elif not user.is_active:
          await message.answer("Ваш аккаунт ожидает активации.")

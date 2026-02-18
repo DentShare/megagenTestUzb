@@ -327,7 +327,7 @@ def load_sheet(ws, category: str):
         # Протетика/Лаборатория/Наборы/материалы: Category = колонка "Категория", Sub_category = колонка "Линейка"
         # Структура: category -> Category -> Sub_category -> product -> type -> diameter -> length -> height
         # Название товара используется как у имплантов (в product_data)
-        if category in ["Протетика", "Лаборатория"] and product_type and diameter is not None and length is not None:
+        if category in ["Протетика", "Лаборатория"] and product_type is not None and diameter is not None and length is not None:
             product_key = name
             excel_cat = subcategory.strip() if subcategory else "Основное"  # Category
             excel_line = line.strip() if line else "Без линейки"           # Sub_category
@@ -1008,6 +1008,23 @@ def print_statistics(catalog: dict):
     print(f"  Items without sizes: {total_items_no_size}")
     print(f"  Total items: {total_items_with_size + total_items_no_size}")
 
+
+def _catalog_to_json_serializable(obj):
+    """Преобразует каталог в структуру с ключами, допустимыми в JSON (tuple -> str)."""
+    if isinstance(obj, dict):
+        return {_json_key(k): _catalog_to_json_serializable(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_catalog_to_json_serializable(item) for item in obj]
+    return obj
+
+
+def _json_key(k):
+    """Ключи в JSON могут быть только str, int, float, bool, None. Tuple приводим к str."""
+    if isinstance(k, tuple):
+        return str(k)
+    return k
+
+
 def main():
     import sys
     
@@ -1027,9 +1044,10 @@ def main():
         print_statistics(catalog)
         generate_catalog_file(catalog, visibility)
         
-        # Также сохраняем JSON
+        # Также сохраняем JSON (ключи-кортежи, например диаметр (4.5, 3.8), приводим к строкам)
+        catalog_for_json = _catalog_to_json_serializable(catalog)
         with open("catalog.json", "w", encoding="utf-8") as f:
-            json.dump(catalog, f, ensure_ascii=False, indent=2)
+            json.dump(catalog_for_json, f, ensure_ascii=False, indent=2)
         print("Generated: catalog.json")
         
         print("\nNext step: Restart the bot to use the new catalog data.")

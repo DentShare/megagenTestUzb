@@ -46,7 +46,7 @@ async def notify_manager_about_order_status(
         order.manager = result.scalar_one_or_none()
     
     if not order.manager:
-        logger.warning(f"Manager not found for order {order.id}")
+        logger.warning("Manager not found for order %s", order.id)
         return False
     
     # Формируем текст уведомления

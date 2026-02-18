@@ -25,45 +25,15 @@ def haversine_distance(lat1: float, lon1: float, lat2: float, lon2: float) -> fl
 
     return R * c
 
-async def optimize_route(current_location: Tuple[float, float], orders_data: List[Dict]) -> Tuple[List[Dict], float]:
+def _optimize_route_sync(current_location: Tuple[float, float], orders_data: List[Dict]) -> Tuple[List[Dict], float]:
     """
-    Sorts orders using Nearest Neighbor algorithm suitable for small number of stops.
+    Nearest Neighbor алгоритм для оптимизации маршрута.
     orders_data items must have 'lat', 'lon' keys.
     Returns (sorted_orders, total_distance_km).
     """
     unvisited = orders_data[:]
     visited = []
     total_dist = 0.0
-    
-    current_lat, current_lon = current_location
-    
-    while unvisited:
-        # Find nearest neighbor
-        nearest_order = None
-        min_dist = float('inf')
-        
-        for order in unvisited:
-            dist = haversine_distance(current_lat, current_lon, order['lat'], order['lon'])
-            if dist < min_dist:
-                min_dist = dist
-                nearest_order = order
-        
-        # Move to nearest
-        visited.append(nearest_order)
-        unvisited.remove(nearest_order)
-        total_dist += min_dist
-        
-        current_lat = nearest_order['lat']
-        current_lon = nearest_order['lon']
-        
-    return visited, total_dist
-
-
-def _optimize_route_sync(current_location: Tuple[float, float], orders_data: List[Dict]) -> Tuple[List[Dict], float]:
-    """Синхронная версия Nearest Neighbor (для использования внутри кластеров)."""
-    unvisited = orders_data[:]
-    visited = []
-    total_dist = 0.0
     current_lat, current_lon = current_location
 
     while unvisited:
@@ -80,6 +50,11 @@ def _optimize_route_sync(current_location: Tuple[float, float], orders_data: Lis
         current_lat = nearest_order['lat']
         current_lon = nearest_order['lon']
     return visited, total_dist
+
+
+async def optimize_route(current_location: Tuple[float, float], orders_data: List[Dict]) -> Tuple[List[Dict], float]:
+    """Async-обёртка над _optimize_route_sync (для обратной совместимости)."""
+    return _optimize_route_sync(current_location, orders_data)
 
 
 def build_clusters(orders_data: List[Dict], max_dist_km: float) -> List[List[Dict]]:

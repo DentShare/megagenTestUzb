@@ -23,15 +23,17 @@ class Config(BaseSettings):
     
     # Database
     DB_DIALECT: str = Field(default="sqlite", description="Тип БД: postgres или sqlite")
-    DB_POOL_SIZE: int = Field(default=40, description="Размер пула соединений PostgreSQL (для 30-40 сотрудников)")
-    DB_MAX_OVERFLOW: int = Field(default=20, description="Доп. соединений поверх pool_size")
+    DB_POOL_SIZE: int = Field(default=10, description="Размер пула соединений PostgreSQL (для 30-40 сотрудников достаточно 10)")
+    DB_MAX_OVERFLOW: int = Field(default=10, description="Доп. соединений поверх pool_size")
     DB_USER: str = Field(default="postgres", description="Пользователь БД")
     DB_PASS: str = Field(default="postgres", description="Пароль БД")
     DB_HOST: str = Field(default="localhost", description="Хост БД")
     DB_PORT: str = Field(default="5432", description="Порт БД")
     DB_NAME: str = Field(default="megagen_bot", description="Имя БД")
     SQLITE_PATH: str = Field(default="megagen_bot.sqlite3", description="Путь к SQLite файлу")
-    
+    # Railway и др. платформы передают один DATABASE_URL — если задан, используем его
+    DATABASE_URL_OVERRIDE: Optional[str] = Field(default=None, description="URL БД", validation_alias="DATABASE_URL")
+
     @field_validator("DB_DIALECT")
     @classmethod
     def validate_db_dialect(cls, v: str) -> str:
@@ -44,7 +46,14 @@ class Config(BaseSettings):
     @computed_field
     @property
     def DATABASE_URL(self) -> str:
-        """URL подключения к БД."""
+        """URL подключения к БД. Если задан DATABASE_URL (Railway и др.) — используем его."""
+        raw = self.DATABASE_URL_OVERRIDE
+        if raw:
+            raw = raw.strip()
+            # PostgreSQL от Railway: postgresql://... → для asyncpg нужен postgresql+asyncpg://
+            if raw.startswith("postgresql://") and "+asyncpg" not in raw:
+                return raw.replace("postgresql://", "postgresql+asyncpg://", 1)
+            return raw
         if self.DB_DIALECT in ("sqlite", "sqlite3"):
             base_dir = Path(__file__).resolve().parent
             db_path = Path(self.SQLITE_PATH)

@@ -196,14 +196,14 @@ def _print_image_sync(printer, image: Image.Image, printer_type: str, order_id: 
         # Добавляем отступы и обрезку
         printer.cut()
     except Exception as e:
-        logger.error(f"Ошибка при синхронной печати для заказа #{order_id}: {e}", exc_info=True)
+        logger.error("Ошибка при синхронной печати для заказа #%s: %s", order_id, e, exc_info=True)
         raise
     finally:
         # Всегда закрываем соединение
         try:
             printer.close()
         except Exception as close_error:
-            logger.warning(f"Ошибка при закрытии принтера: {close_error}")
+            logger.warning("Ошибка при закрытии принтера: %s", close_error)
 
 
 async def send_to_printer(label_buf: BytesIO, order_id: int) -> tuple[bool, str]:
@@ -251,10 +251,10 @@ async def send_to_printer(label_buf: BytesIO, order_id: int) -> tuple[bool, str]
                 else:
                     # Попытка использовать адрес как путь к устройству
                     # Для USB это обычно не работает напрямую, но попробуем
-                    logger.warning(f"USB адрес должен быть в формате vendor_id:product_id, получен: {config.PRINTER_ADDRESS}")
+                    logger.warning("USB адрес должен быть в формате vendor_id:product_id, получен: %s", config.PRINTER_ADDRESS)
                     return False, "Неверный формат USB адреса. Используйте vendor_id:product_id"
             except (ValueError, AttributeError) as e:
-                logger.error(f"Ошибка подключения к USB принтеру: {e}")
+                logger.error("Ошибка подключения к USB принтеру: %s", e)
                 return False, f"Ошибка подключения к USB принтеру: {e}"
                 
         elif printer_type == "network":
@@ -262,7 +262,7 @@ async def send_to_printer(label_buf: BytesIO, order_id: int) -> tuple[bool, str]
             try:
                 printer = Network(host=config.PRINTER_ADDRESS, port=config.PRINTER_NETWORK_PORT)
             except Exception as e:
-                logger.error(f"Ошибка подключения к сетевому принтеру: {e}")
+                logger.error("Ошибка подключения к сетевому принтеру: %s", e)
                 return False, f"Ошибка подключения к сетевому принтеру: {e}"
                 
         elif printer_type == "serial":
@@ -273,7 +273,7 @@ async def send_to_printer(label_buf: BytesIO, order_id: int) -> tuple[bool, str]
                     baudrate=config.PRINTER_SERIAL_BAUDRATE
                 )
             except Exception as e:
-                logger.error(f"Ошибка подключения к serial принтеру: {e}")
+                logger.error("Ошибка подключения к serial принтеру: %s", e)
                 return False, f"Ошибка подключения к serial принтеру: {e}"
         else:
             return False, f"Неподдерживаемый тип принтера: {printer_type}"
@@ -285,12 +285,12 @@ async def send_to_printer(label_buf: BytesIO, order_id: int) -> tuple[bool, str]
         loop = asyncio.get_event_loop()
         await loop.run_in_executor(None, _print_image_sync, printer, image, printer_type, order_id)
         
-        logger.info(f"Этикетка для заказа #{order_id} успешно отправлена на принтер ({printer_type})")
+        logger.info("Этикетка для заказа #%s успешно отправлена на принтер (%s)", order_id, printer_type)
         return True, f"Этикетка отправлена на принтер ({printer_type})"
         
     except ImportError:
         logger.error("Библиотека python-escpos не установлена. Установите: pip install python-escpos")
         return False, "Библиотека принтера не установлена"
     except Exception as e:
-        logger.error(f"Ошибка при отправке на принтер для заказа #{order_id}: {e}", exc_info=True)
+        logger.error("Ошибка при отправке на принтер для заказа #%s: %s", order_id, e, exc_info=True)
         return False, f"Ошибка печати: {e}"

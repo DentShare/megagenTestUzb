@@ -36,7 +36,7 @@ def load_catalog_automatically(excel_filename: Optional[str] = None) -> bool:
                 path = Path(filename)
                 if path.exists():
                     file_path = path
-                    logger.info(f"Found catalog file: {filename}")
+                    logger.info("Found catalog file: %s", filename)
                     break
             
             if not file_path:
@@ -44,10 +44,10 @@ def load_catalog_automatically(excel_filename: Optional[str] = None) -> bool:
                 return False
         
         if not file_path or not file_path.exists():
-            logger.warning(f"Catalog file not found: {excel_filename or 'auto'}. Using existing catalog_data.py")
+            logger.warning("Catalog file not found: %s. Using existing catalog_data.py", excel_filename or 'auto')
             return False
         
-        logger.info(f"Loading catalog from: {file_path}")
+        logger.info("Loading catalog from: %s", file_path)
         
         # Загружаем каталог
         result = load_catalog_from_excel(str(file_path))
@@ -90,10 +90,10 @@ def load_catalog_automatically(excel_filename: Optional[str] = None) -> bool:
         return True
         
     except ImportError as e:
-        logger.error(f"Failed to import catalog loader: {e}")
+        logger.error("Failed to import catalog loader: %s", e)
         logger.warning("Using existing catalog_data.py")
         return False
     except Exception as e:
-        logger.error(f"Error loading catalog: {e}", exc_info=True)
+        logger.error("Error loading catalog: %s", e, exc_info=True)
         logger.warning("Using existing catalog_data.py")
         return False

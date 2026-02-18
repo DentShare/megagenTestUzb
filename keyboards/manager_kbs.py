@@ -1144,6 +1144,39 @@ def _collect_lengths_from_line(line_data: dict, product_type, diameter) -> list:
                     pass
     return sorted(lengths_set)
 
+
+def _lengths_with_has_abutment(line_data: dict, product_type, diameter) -> list:
+    """
+    Возвращает список (length, has_abutment_height) для линейки.
+    has_abutment_height=False если у позиции нет параметра «высота абатмента» (товар сразу по длине).
+    """
+    result = {}  # length -> has_abutment
+    if not isinstance(line_data, dict):
+        return []
+    for product_key, product_line_data in line_data.items():
+        if product_key == "no_size" or not isinstance(product_line_data, dict):
+            continue
+        pd = product_line_data
+        level2 = _get_nested(pd, product_type, diameter) if product_type is not None else _get_nested(pd, diameter)
+        if level2 is None and product_type is not None:
+            level2 = _get_nested(pd, diameter)
+        if not isinstance(level2, dict):
+            continue
+        for k, ld in level2.items():
+            try:
+                length_f = float(k)
+            except (ValueError, TypeError):
+                continue
+            if not isinstance(ld, dict):
+                continue
+            # Если под длиной лежит продукт (есть sku) — нет уровня «высота абатмента»
+            if ld.get("sku") is not None:
+                result[length_f] = False
+            else:
+                # Есть вложенные ключи (высоты абатмента)
+                result[length_f] = True
+    return sorted(result.items())
+
 def _collect_heights_from_line(line_data: dict, product_type, diameter, length) -> list:
     """Собирает все высоты абатмента по всем товарам линейки для тип+диаметр+длина."""
     heights_set = set()
@@ -1211,10 +1244,10 @@ def make_prosthetics_diameters_kb(category: str, line: str, product: str, produc
         return make_product_type_kb(category, line, product, subcategory=subcategory)
     diameters = []
     
-    type_level = _catalog_get(product_line_data, product_type) if product_type else None
+    type_level = _catalog_get(product_line_data, product_type) if product_type is not None else None
     if type_level is not None:
         diameters = list(type_level.keys())
-    elif not product_type:
+    elif product_type is None:
         if isinstance(product_line_data, dict):
             test_key = list(product_line_data.keys())[0] if product_line_data else None
             if isinstance(test_key, (int, float)):
@@ -1239,7 +1272,7 @@ def make_prosthetics_diameters_kb(category: str, line: str, product: str, produc
     return InlineKeyboardMarkup(inline_keyboard=rows)
 
 def make_prosthetics_gum_height_kb(category: str, line: str, product: str, product_type: Optional[str], diameter: float, stock_data: Dict[float, int], subcategory: str = None) -> InlineKeyboardMarkup:
-    """Клавиатура высоты десны для протетики. Путь: Category -> Sub_category -> product."""
+    """Клавиатура высоты десны для протетики. Если у позиции нет высоты абатмента — кнопка ведёт сразу в корзину (height=None)."""
     BUTTONS_PER_ROW = getattr(config, "GUM_HEIGHT_BUTTONS_PER_ROW", 2)
     if subcategory and category in CATALOG and subcategory in CATALOG[category] and line in CATALOG[category][subcategory]:
         line_data = CATALOG[category][subcategory][line]
@@ -1248,45 +1281,38 @@ def make_prosthetics_gum_height_kb(category: str, line: str, product: str, produ
         product_line_data = None
     if not product_line_data:
         return make_prosthetics_diameters_kb(category, line, product, product_type, subcategory=subcategory)
-    gum_heights = []
-    
-    type_level = _catalog_get(product_line_data, product_type) if product_type else None
-    diam_level = _catalog_get(type_level or product_line_data, diameter)
-    if diam_level is not None:
-        gum_heights = list(diam_level.keys())
-    
+    # Один товар — передаём как «линейку» из одного продукта»
+    line_data_single = {product: product_line_data}
+    length_has_abutment = _lengths_with_has_abutment(line_data_single, product_type, diameter)
+    if not length_has_abutment:
+        return make_prosthetics_diameters_kb(category, line, product, product_type, subcategory=subcategory)
     rows = []
-    
+    def _cb(length, has_abutment):
+        if has_abutment:
+            return MenuCallback(
+                level=5, category=category, subcategory=subcategory or None, line=line, product=product,
+                product_type=product_type, diameter=diameter, length=length,
+                action="select_abutment_height"
+            ).pack()
+        return MenuCallback(
+            level=5, category=category, subcategory=subcategory or None, line=line, product=product,
+            product_type=product_type, diameter=diameter, length=length, height=None,
+            action="add_to_cart"
+        ).pack()
     if BUTTONS_PER_ROW == 1:
-        for height in sorted(gum_heights):
-            qty = stock_data.get(height, 0)
-            text = f"📏 {height} мм ({qty} шт)" if qty > 0 else f"📏 {height} мм (0 шт) ❌"
-            rows.append([
-                InlineKeyboardButton(
-                    text=text,
-                    callback_data=MenuCallback(
-                        level=5, category=category, subcategory=subcategory or None, line=line, product=product,
-                        product_type=product_type, diameter=diameter, length=height,
-                        action="select_abutment_height"
-                    ).pack()
-                )
-            ])
+        for length, has_abutment in length_has_abutment:
+            qty = stock_data.get(length, 0)
+            text = f"📏 {length} мм ({qty} шт)" if qty > 0 else f"📏 {length} мм (0 шт) ❌"
+            rows.append([InlineKeyboardButton(text=text, callback_data=_cb(length, has_abutment))])
     else:
-        for i in range(0, len(gum_heights), BUTTONS_PER_ROW):
+        for i in range(0, len(length_has_abutment), BUTTONS_PER_ROW):
             row = []
             for j in range(BUTTONS_PER_ROW):
-                if i + j < len(gum_heights):
-                    height = sorted(gum_heights)[i + j]
-                    qty = stock_data.get(height, 0)
-                    text = f"📏 {height} мм" if qty > 0 else f"📏 {height} мм ❌"
-                    row.append(InlineKeyboardButton(
-                        text=text,
-                        callback_data=MenuCallback(
-                            level=5, category=category, subcategory=subcategory or None, line=line, product=product,
-                            product_type=product_type, diameter=diameter, length=height,
-                            action="select_abutment_height"
-                        ).pack()
-                    ))
+                if i + j < len(length_has_abutment):
+                    length, has_abutment = length_has_abutment[i + j]
+                    qty = stock_data.get(length, 0)
+                    text = f"📏 {length} мм" if qty > 0 else f"📏 {length} мм ❌"
+                    row.append(InlineKeyboardButton(text=text, callback_data=_cb(length, has_abutment)))
             rows.append(row)
     
     back_cb = MenuCallback(level=4, category=category, subcategory=subcategory or None, line=line, product=product, product_type=product_type).pack()
@@ -1298,27 +1324,35 @@ def make_prosthetics_gum_height_kb(category: str, line: str, product: str, produ
     return InlineKeyboardMarkup(inline_keyboard=rows)
 
 def make_prosthetics_gum_height_for_line_kb(category: str, subcategory: str, line: str, product_type, diameter: float, stock_data: Dict[float, int], product_type_str: Optional[str] = None) -> InlineKeyboardMarkup:
-    """Клавиатура длины (высота десны) по линейке. product_type — угол или None, product_type_str — «0 [N]» и т.д."""
+    """Клавиатура длины (высота десны) по линейке. Если у позиции нет высоты абатмента — кнопка ведёт сразу в корзину (height=None)."""
     BUTTONS_PER_ROW = getattr(config, "GUM_HEIGHT_BUTTONS_PER_ROW", 2)
     pt_key = product_type_str if product_type_str else product_type
-    gum_heights = []
+    length_has_abutment = []
     if subcategory and category in CATALOG and subcategory in CATALOG[category] and line in CATALOG[category][subcategory]:
         line_data = CATALOG[category][subcategory][line]
-        gum_heights = _collect_lengths_from_line(line_data, pt_key, diameter)
-    if not gum_heights:
+        length_has_abutment = _lengths_with_has_abutment(line_data, pt_key, diameter)
+    if not length_has_abutment:
         return make_prosthetics_diameters_for_line_kb(category, subcategory, line, product_type, product_type_str)
     rows = []
-    def _cb(length):
+    def _cb_abutment(length):
         kw = dict(level=5, line=line, diameter=diameter, length=length, action="select_abutment_height")
         if product_type_str:
             kw["product_type_str"] = product_type_str
         else:
             kw["product_type"] = product_type
         return _pack_with_subcategory_fallback(category, subcategory, **kw)
-    for height in sorted(gum_heights):
-        qty = stock_data.get(height, 0)
-        text = f"📏 {height} мм ({qty} шт)" if qty > 0 else f"📏 {height} мм (0 шт) ❌"
-        rows.append([InlineKeyboardButton(text=text, callback_data=_cb(height))])
+    def _cb_add_no_height(length):
+        kw = dict(level=5, line=line, diameter=diameter, length=length, height=None, action="add_to_cart")
+        if product_type_str:
+            kw["product_type_str"] = product_type_str
+        else:
+            kw["product_type"] = product_type
+        return _pack_with_subcategory_fallback(category, subcategory, **kw)
+    for length, has_abutment in length_has_abutment:
+        qty = stock_data.get(length, 0)
+        text = f"📏 {length} мм ({qty} шт)" if qty > 0 else f"📏 {length} мм (0 шт) ❌"
+        cb = _cb_abutment(length) if has_abutment else _cb_add_no_height(length)
+        rows.append([InlineKeyboardButton(text=text, callback_data=cb)])
     back_kw = dict(level=3, line=line)
     if product_type_str:
         back_kw["product_type_str"] = product_type_str
@@ -1433,7 +1467,7 @@ def make_items_kb(category: str, line: str, diameter: float, stock_data: Dict[fl
     # Для протетики: показываем высоту десны, затем будет выбор высоты абатмента
     # Для имплантов: показываем длину
     
-    if category == "Протетика" and product_type:
+    if category == "Протетика" and product_type is not None:
         # Для протетики - показываем высоту десны
         return make_prosthetics_gum_height_kb(category, line, product_type, diameter, stock_data)
     
@@ -1443,7 +1477,7 @@ def make_items_kb(category: str, line: str, diameter: float, stock_data: Dict[fl
     # Получаем данные товаров из каталога
     catalog_items = {}
     if category in CATALOG and line in CATALOG[category]:
-        if product_type and product_type in CATALOG[category][line]:
+        if product_type is not None and product_type in CATALOG[category][line]:
             if diam_key in CATALOG[category][line][product_type]:
                 catalog_items = CATALOG[category][line][product_type][diam_key]
         elif diam_key in CATALOG[category][line]:
@@ -1757,6 +1791,7 @@ def get_manager_menu_kb() -> InlineKeyboardMarkup:
         [InlineKeyboardButton(text="🛍 Каталог продукции", callback_data="manager:catalog")],
         [InlineKeyboardButton(text="📂 Карта продукции", callback_data="manager:product_map")],
         [InlineKeyboardButton(text="📋 Мои заказы", callback_data="manager:orders")],
+        [InlineKeyboardButton(text="🔄 Замены товаров", callback_data="manager:replacements")],
     ]
     
     # РАСКОММЕНТИРУЙТЕ НИЖЕ для кнопок в одну строку:

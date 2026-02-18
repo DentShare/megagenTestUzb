@@ -24,24 +24,20 @@ class DatabaseMiddleware(BaseMiddleware):
         try:
             async with session_maker() as session:
                 data['session'] = session
-                try:
-                    return await handler(event, data)
-                finally:
-                    await session.close()
+                return await handler(event, data)
         except (OperationalError, ConnectionRefusedError, OSError) as e:
-            # Важно: пишем traceback, чтобы было видно где именно упало
-            logger.error(f"Database connection error: {e}", exc_info=True)
+            logger.error("Database connection error: %s", e, exc_info=True)
             error_message = "❌ Ошибка подключения к базе данных. Попробуйте позже."
-            
+
             if isinstance(event, CallbackQuery):
                 try:
                     await event.answer(error_message, show_alert=True)
-                except:
+                except Exception:
                     pass
             elif isinstance(event, Message):
                 try:
                     await event.answer(error_message)
-                except:
+                except Exception:
                     pass
             return
 

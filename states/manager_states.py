@@ -6,7 +6,8 @@ class ManagerOrderState(StatesGroup):
     cart_view = State() # Viewing cart
     waiting_for_clinic_search = State() # Searching for clinic
     selecting_clinic = State() # Picking from search results
-    
+    waiting_for_replacement_search = State() # Подбор замены: ввод запроса для поиска по каталогу
+
     # Cart data structure in FSM:
     # cart: list[dict] -> [{'sku': str, 'name': str, 'quantity': int, 'line': str, 'diameter': float, 'length': float}]
     # order_meta: dict -> {'is_urgent': bool, 'delivery_type': str}

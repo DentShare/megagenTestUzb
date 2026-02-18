@@ -109,5 +109,9 @@ class OrderItem(Base):
     item_sku: Mapped[str] = mapped_column(String, nullable=False)
     item_name: Mapped[str] = mapped_column(String, nullable=False)
     quantity: Mapped[int] = mapped_column(nullable=False)
+    # Замена товара (склад указал «нет в наличии», менеджер подобрал замену)
+    need_replacement: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    replacement_sku: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    replacement_name: Mapped[Optional[str]] = mapped_column(String, nullable=True)
 
     order: Mapped["Order"] = relationship("Order", back_populates="items")

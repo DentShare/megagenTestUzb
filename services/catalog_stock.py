@@ -4,6 +4,7 @@
 """
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 from pathlib import Path
@@ -11,7 +12,12 @@ from typing import Dict
 
 logger = logging.getLogger(__name__)
 
+from catalog_config import get_catalog
+
 STOCK_FILE = Path(__file__).resolve().parent.parent / "catalog_stock.json"
+
+# Блокировка для атомарности validate_stock + subtract
+_stock_lock = asyncio.Lock()
 
 
 def _load_store() -> Dict[str, int]:
@@ -36,9 +42,8 @@ def _save_store(store: Dict[str, int]) -> None:
 
 def init_from_catalog() -> None:
     """Заполнить store из CATALOG (qty по каждому sku). Перезаписывает существующий файл."""
-    try:
-        from catalog_data import CATALOG
-    except ImportError:
+    CATALOG = get_catalog()
+    if not CATALOG:
         logger.warning("catalog_stock: catalog_data not found, skip init")
         return
 
@@ -114,9 +119,8 @@ def get_stock(product_line: str, diameter: float, diameter_body: float | None = 
     Импланты: line,diameter -> lengths. diameter_body для "4.5 [3.8]" — отдельный продукт.
     """
     ensure_inited()
-    try:
-        from catalog_data import CATALOG
-    except ImportError:
+    CATALOG = get_catalog()
+    if not CATALOG:
         return {}
 
     store = _load_store()
@@ -174,9 +178,8 @@ def get_stock(product_line: str, diameter: float, diameter_body: float | None = 
 def get_stock_no_size(category: str, line: str) -> Dict[str, int]:
     """Остатки по товарам без размеров: { sku: qty }."""
     ensure_inited()
-    try:
-        from catalog_data import CATALOG
-    except ImportError:
+    CATALOG = get_catalog()
+    if not CATALOG:
         return {}
 
     store = _load_store()

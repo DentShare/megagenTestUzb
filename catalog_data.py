@@ -386,60 +386,68 @@ CATALOG = {
         "LabAnalog": {
             "AO3,5": {
                     "Lab Analog (AO) LA 350H": {
-                        "4.5": {
-                            1.5: {
+                        "0": {
+                            4.5: {
+                                1.5: {"name": "Lab Analog (AO) LA 350H", "sku": "LA-AR-45-15-25", "unit": "шт", "qty": 34 },
                             },
                         },
                     },
             },
             "AnyOne": {
                     "Lab Analog (AO) LA 400H": {
-                        "4.5": {
-                            1.5: {
+                        "0": {
+                            4.5: {
+                                1.5: {"name": "Lab Analog (AO) LA 400H", "sku": "LA-AO-45-15-25", "unit": "шт", "qty": 34 },
                             },
                         },
                     },
             },
             "AnyRidge B": {
                     "Lab Analog (AR) AANLAF35": {
-                        "3.5": {
-                            8.0: {
+                        "0": {
+                            3.5: {
+                                8.0: {"name": "Lab Analog (AR) AANLAF35", "sku": "LA-AO-45-15-26", "unit": "шт", "qty": 121 },
                             },
                         },
                     },
             },
             "AnyRidge G": {
                     "Lab Analog (AR) AANLAF 4055": {
-                        "4.0": {
-                            55.0: {
+                        "0": {
+                            4.0: {
+                                55.0: {"name": "Lab Analog (AR) AANLAF 4055", "sku": "LA-AR-45-15-26", "unit": "шт", "qty": 30 },
                             },
                         },
                     },
             },
             "AnyRidge Y": {
                     "Lab Analog (AR) AALLAF 6080": {
-                        "6.0": {
-                            8.0: {
+                        "0": {
+                            6.0: {
+                                8.0: {"name": "Lab Analog (AR) AALLAF 6080", "sku": "LA-EZ-400", "unit": "шт", "qty": 1 },
                             },
                         },
                     },
             },
             "Ari": {
                     "Lab Analog NC (ARiE) ARIEALA 2305": {
-                        "2.3": {
-                            5.0: {
+                        "0": {
+                            2.3: {
+                                5.0: {"name": "Lab Analog NC (ARiE) ARIEALA 2305", "sku": "LA-AR-45-15-32", "unit": "шт", "qty": 30 },
                             },
                         },
                     },
                     "Lab Analog NC (ARiE) ARIEALA 2307": {
-                        "2.3": {
-                            7.0: {
+                        "0": {
+                            2.3: {
+                                7.0: {"name": "Lab Analog NC (ARiE) ARIEALA 2307", "sku": "LA-AO-45-15-32", "unit": "шт", "qty": 121 },
                             },
                         },
                     },
                     "Lab Analog NC (ARiE) ARIEALA 2309": {
-                        "2.3": {
-                            9.0: {
+                        "0": {
+                            2.3: {
+                                9.0: {"name": "Lab Analog NC (ARiE) ARIEALA 2309", "sku": "LA-EZ-407", "unit": "шт", "qty": 23 },
                             },
                         },
                     },
@@ -458,8 +466,9 @@ CATALOG = {
             },
             "Mini": {
                     "Lab Analog (MN) MILA300H": {
-                        "3.0": {
-                            8.0: {
+                        "0": {
+                            3.0: {
+                                8.0: {"name": "Lab Analog (MN) MILA300H", "sku": "LA-EZ-401", "unit": "шт", "qty": 23 },
                             },
                         },
                     },
@@ -569,9 +578,11 @@ CATALOG = {
         "EzPost": {
             "ARi": {
                     "Ez Post Abutment (ARiE) ARIEEPN 3507T [35Ncm]": {
-                        "3.5": {
-                            1.0: {
-                                7.0: {"name": "Ez Post Abutment (ARiE) ARIEEPN 3507T [35Ncm]", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 1 },
+                        "0": {
+                            3.5: {
+                                1.0: {
+                                    7.0: {"name": "Ez Post Abutment (ARiE) ARIEEPN 3507T [35Ncm]", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 1 },
+                                },
                             },
                         },
                     },
@@ -650,65 +661,74 @@ CATALOG = {
                         },
                     },
                     "EZ Post Abutment (AO) EP 4515 HT": {
-                        "4.5": {
-                            1.5: {
-                                5.0: {"name": "EZ Post Abutment (AO) EP 4515 HT", "sku": "EP-AR-45-15-25-ST", "unit": "шт", "qty": 49 },
-                            },
-                        },
-                    },
-                    "EZ Post Abutment (AO) EP 4525 HT": {
-                        "4.5": {
-                            2.5: {
-                                5.0: {"name": "EZ Post Abutment (AO) EP 4525 HT", "sku": "EP-AR-45-20-25-ST", "unit": "шт", "qty": 36 },
+                        "0": {
+                            4.5: {
+                                1.5: {
+                                    5.0: {"name": "EZ Post Abutment (AO) EP 4515 HT", "sku": "EP-AR-45-15-25-ST", "unit": "шт", "qty": 49 },
+                                },
                             },
                         },
                     },
                     "EZ Post Abutment (AO) EP 4535 HT": {
-                        "4.5": {
-                            3.5: {
-                                5.0: {"name": "EZ Post Abutment (AO) EP 4535 HT", "sku": "EP-AR-45-15-25-AN", "unit": "шт", "qty": 23 },
+                        "0": {
+                            4.5: {
+                                3.5: {
+                                    5.0: {"name": "EZ Post Abutment (AO) EP 4535 HT", "sku": "EP-AR-45-15-25-AN", "unit": "шт", "qty": 23 },
+                                },
                             },
                         },
                     },
                     "EZ Post Abutment (AO) EP 4545 HT": {
-                        "4.5": {
+                        "0": {
                             4.5: {
-                                5.0: {"name": "EZ Post Abutment (AO) EP 4545 HT", "sku": "EP-AO-45-15-25-ST", "unit": "шт", "qty": 14 },
+                                4.5: {
+                                    5.0: {"name": "EZ Post Abutment (AO) EP 4545 HT", "sku": "EP-AO-45-15-25-ST", "unit": "шт", "qty": 14 },
+                                },
                             },
                         },
                     },
                     "EZ Post Abutment (AO) EP 5515 HT": {
-                        "5.5": {
-                            1.5: {
-                                5.0: {"name": "EZ Post Abutment (AO) EP 5515 HT", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 11 },
+                        "0": {
+                            5.5: {
+                                1.5: {
+                                    5.0: {"name": "EZ Post Abutment (AO) EP 5515 HT", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 11 },
+                                },
                             },
                         },
                     },
                     "EZ Post Abutment (AO) EP 5525 HT": {
-                        "5.5": {
-                            2.5: {
-                                5.0: {"name": "EZ Post Abutment (AO) EP 5525 HT", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 25 },
+                        "0": {
+                            5.5: {
+                                2.5: {
+                                    5.0: {"name": "EZ Post Abutment (AO) EP 5525 HT", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 25 },
+                                },
                             },
                         },
                     },
                     "EZ Post Abutment (AO) EP 5535 HT": {
-                        "5.5": {
-                            3.5: {
-                                5.0: {"name": "EZ Post Abutment (AO) EP 5535 HT", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 14 },
+                        "0": {
+                            5.5: {
+                                3.5: {
+                                    5.0: {"name": "EZ Post Abutment (AO) EP 5535 HT", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 14 },
+                                },
                             },
                         },
                     },
                     "EZ Post Abutment (AO) EP 5545 HT": {
-                        "5.5": {
-                            4.5: {
-                                5.0: {"name": "EZ Post Abutment (AO) EP 5545 HT", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 2 },
+                        "0": {
+                            5.5: {
+                                4.5: {
+                                    5.0: {"name": "EZ Post Abutment (AO) EP 5545 HT", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 2 },
+                                },
                             },
                         },
                     },
                     "EZ Post Abutment (AO) EP 6515 HT": {
-                        "6.5": {
-                            1.5: {
-                                5.0: {"name": "EZ Post Abutment (AO) EP 6515 HT", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 4 },
+                        "0": {
+                            6.5: {
+                                1.5: {
+                                    5.0: {"name": "EZ Post Abutment (AO) EP 6515 HT", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 4 },
+                                },
                             },
                         },
                     },
@@ -841,58 +861,74 @@ CATALOG = {
                         },
                     },
                     "Ez Post Abutment (AR) AANEPH 4027L": {
-                        "4.0": {
-                            2.0: {
-                                7.0: {"name": "Ez Post Abutment (AR) AANEPH 4027L", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 22 },
+                        "0": {
+                            4.0: {
+                                2.0: {
+                                    7.0: {"name": "Ez Post Abutment (AR) AANEPH 4027L", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 22 },
+                                },
                             },
                         },
                     },
                     "Ez Post Abutment (AR) AANEPH 4037L": {
-                        "4.0": {
-                            3.0: {
-                                7.0: {"name": "Ez Post Abutment (AR) AANEPH 4037L", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 10 },
+                        "0": {
+                            4.0: {
+                                3.0: {
+                                    7.0: {"name": "Ez Post Abutment (AR) AANEPH 4037L", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 10 },
+                                },
                             },
                         },
                     },
                     "Ez Post Abutment (AR) AANEPH 4047L": {
-                        "4.0": {
+                        "0": {
                             4.0: {
-                                7.0: {"name": "Ez Post Abutment (AR) AANEPH 4047L", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 4 },
+                                4.0: {
+                                    7.0: {"name": "Ez Post Abutment (AR) AANEPH 4047L", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 4 },
+                                },
                             },
                         },
                     },
                     "Ez Post Abutment (AR) AANEPH 5027L": {
-                        "5.0": {
-                            2.0: {
-                                7.0: {"name": "Ez Post Abutment (AR) AANEPH 5027L", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 12 },
+                        "0": {
+                            5.0: {
+                                2.0: {
+                                    7.0: {"name": "Ez Post Abutment (AR) AANEPH 5027L", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 12 },
+                                },
                             },
                         },
                     },
                     "Ez Post Abutment (AR) AANEPH 5037L": {
-                        "5.0": {
-                            3.0: {
-                                7.0: {"name": "Ez Post Abutment (AR) AANEPH 5037L", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 3 },
+                        "0": {
+                            5.0: {
+                                3.0: {
+                                    7.0: {"name": "Ez Post Abutment (AR) AANEPH 5037L", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 3 },
+                                },
                             },
                         },
                     },
                     "Ez Post Abutment (AR) AANEPH 5047L": {
-                        "5.0": {
-                            4.0: {
-                                7.0: {"name": "Ez Post Abutment (AR) AANEPH 5047L", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 1 },
+                        "0": {
+                            5.0: {
+                                4.0: {
+                                    7.0: {"name": "Ez Post Abutment (AR) AANEPH 5047L", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 1 },
+                                },
                             },
                         },
                     },
                     "Ez Post Abutment (AR) AANEPH 6027L": {
-                        "6.0": {
-                            2.0: {
-                                7.0: {"name": "Ez Post Abutment (AR) AANEPH 6027L", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 6 },
+                        "0": {
+                            6.0: {
+                                2.0: {
+                                    7.0: {"name": "Ez Post Abutment (AR) AANEPH 6027L", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 6 },
+                                },
                             },
                         },
                     },
                     "Ez Post Abutment (AR) AANEPH 6035L": {
-                        "6.0": {
-                            3.0: {
-                                5.0: {"name": "Ez Post Abutment (AR) AANEPH 6035L", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 4 },
+                        "0": {
+                            6.0: {
+                                3.0: {
+                                    5.0: {"name": "Ez Post Abutment (AR) AANEPH 6035L", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 4 },
+                                },
                             },
                         },
                     },
@@ -926,23 +962,29 @@ CATALOG = {
                         },
                     },
                     "Ez Post Abutment (MINI) MIEP3517HT": {
-                        "3.5": {
-                            1.5: {
-                                7.0: {"name": "Ez Post Abutment (MINI) MIEP3517HT", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 5 },
+                        "0": {
+                            3.5: {
+                                1.5: {
+                                    7.0: {"name": "Ez Post Abutment (MINI) MIEP3517HT", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 5 },
+                                },
                             },
                         },
                     },
                     "Ez Post Abutment (MINI) MIEP3527HT": {
-                        "3.5": {
-                            2.5: {
-                                7.0: {"name": "Ez Post Abutment (MINI) MIEP3527HT", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 3 },
+                        "0": {
+                            3.5: {
+                                2.5: {
+                                    7.0: {"name": "Ez Post Abutment (MINI) MIEP3527HT", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 3 },
+                                },
                             },
                         },
                     },
                     "Ez Post Abutment (MINI) MIEP3537HT": {
-                        "3.5": {
+                        "0": {
                             3.5: {
-                                7.0: {"name": "Ez Post Abutment (MINI) MIEP3537HT", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 8 },
+                                3.5: {
+                                    7.0: {"name": "Ez Post Abutment (MINI) MIEP3537HT", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 8 },
+                                },
                             },
                         },
                     },
@@ -1003,95 +1045,121 @@ CATALOG = {
                         },
                     },
                     "Ezpost Abutment (ST) STEA 5710 T": {
-                        "5.0": {
-                            1.0: {
-                                7.0: {"name": "Ezpost Abutment (ST) STEA 5710 T", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 106 },
+                        "0": {
+                            5.0: {
+                                1.0: {
+                                    7.0: {"name": "Ezpost Abutment (ST) STEA 5710 T", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 106 },
+                                },
                             },
                         },
                     },
                     "Ezpost Abutment (ST) STEA 5720 T": {
-                        "5.0": {
-                            2.0: {
-                                7.0: {"name": "Ezpost Abutment (ST) STEA 5720 T", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 51 },
+                        "0": {
+                            5.0: {
+                                2.0: {
+                                    7.0: {"name": "Ezpost Abutment (ST) STEA 5720 T", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 51 },
+                                },
                             },
                         },
                     },
                     "Ezpost Abutment (ST) STEA 5730 T": {
-                        "5.0": {
-                            3.0: {
-                                7.0: {"name": "Ezpost Abutment (ST) STEA 5730 T", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 29 },
+                        "0": {
+                            5.0: {
+                                3.0: {
+                                    7.0: {"name": "Ezpost Abutment (ST) STEA 5730 T", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 29 },
+                                },
                             },
                         },
                     },
                     "Ezpost Abutment (ST) STEA 5740 T": {
-                        "5.0": {
-                            4.0: {
-                                7.0: {"name": "Ezpost Abutment (ST) STEA 5740 T", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 15 },
+                        "0": {
+                            5.0: {
+                                4.0: {
+                                    7.0: {"name": "Ezpost Abutment (ST) STEA 5740 T", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 15 },
+                                },
                             },
                         },
                     },
                     "Ezpost Abutment (ST) STEA 6710 T": {
-                        "6.0": {
-                            1.0: {
-                                7.0: {"name": "Ezpost Abutment (ST) STEA 6710 T", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 17 },
+                        "0": {
+                            6.0: {
+                                1.0: {
+                                    7.0: {"name": "Ezpost Abutment (ST) STEA 6710 T", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 17 },
+                                },
                             },
                         },
                     },
                     "Ezpost Abutment (ST) STEA 6720 T": {
-                        "6.0": {
-                            2.0: {
-                                7.0: {"name": "Ezpost Abutment (ST) STEA 6720 T", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 64 },
+                        "0": {
+                            6.0: {
+                                2.0: {
+                                    7.0: {"name": "Ezpost Abutment (ST) STEA 6720 T", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 64 },
+                                },
                             },
                         },
                     },
                     "Ezpost Abutment (ST) STEA 6730 T": {
-                        "6.0": {
-                            3.0: {
-                                7.0: {"name": "Ezpost Abutment (ST) STEA 6730 T", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 22 },
+                        "0": {
+                            6.0: {
+                                3.0: {
+                                    7.0: {"name": "Ezpost Abutment (ST) STEA 6730 T", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 22 },
+                                },
                             },
                         },
                     },
                     "Ezpost Abutment (ST) STEA 6740 T": {
-                        "6.0": {
-                            4.0: {
-                                7.0: {"name": "Ezpost Abutment (ST) STEA 6740 T", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 1 },
+                        "0": {
+                            6.0: {
+                                4.0: {
+                                    7.0: {"name": "Ezpost Abutment (ST) STEA 6740 T", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 1 },
+                                },
                             },
                         },
                     },
                     "Ezpost Abutment (ST) STEA 6750 T": {
-                        "6.0": {
-                            5.0: {
-                                7.0: {"name": "Ezpost Abutment (ST) STEA 6750 T", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 1 },
+                        "0": {
+                            6.0: {
+                                5.0: {
+                                    7.0: {"name": "Ezpost Abutment (ST) STEA 6750 T", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 1 },
+                                },
                             },
                         },
                     },
                     "Ezpost Abutment (ST) STEAS 4711 T": {
-                        "4.5": {
-                            1.0: {
-                                7.0: {"name": "Ezpost Abutment (ST) STEAS 4711 T", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 60 },
+                        "0": {
+                            4.5: {
+                                1.0: {
+                                    7.0: {"name": "Ezpost Abutment (ST) STEAS 4711 T", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 60 },
+                                },
                             },
                         },
                     },
                     "Ezpost Abutment (ST) STEAS 4721 T": {
-                        "4.5": {
-                            2.0: {
-                                7.0: {"name": "Ezpost Abutment (ST) STEAS 4721 T", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 31 },
+                        "0": {
+                            4.5: {
+                                2.0: {
+                                    7.0: {"name": "Ezpost Abutment (ST) STEAS 4721 T", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 31 },
+                                },
                             },
                         },
                     },
                     "Ezpost Abutment (ST) STEAS 4731 T": {
-                        "4.5": {
-                            3.0: {
-                                7.0: {"name": "Ezpost Abutment (ST) STEAS 4731 T", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 43 },
+                        "0": {
+                            4.5: {
+                                3.0: {
+                                    7.0: {"name": "Ezpost Abutment (ST) STEAS 4731 T", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 43 },
+                                },
                             },
                         },
                     },
                     "Ezpost Abutment (ST) STEAS 4741 NT": {
                         },
                     "Ezpost Abutment (ST) STEAS 4741 T": {
-                        "4.5": {
-                            4.0: {
-                                7.0: {"name": "Ezpost Abutment (ST) STEAS 4741 T", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 11 },
+                        "0": {
+                            4.5: {
+                                4.0: {
+                                    7.0: {"name": "Ezpost Abutment (ST) STEAS 4741 T", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 11 },
+                                },
                             },
                         },
                     },
@@ -1116,30 +1184,339 @@ CATALOG = {
                         },
                     },
                     "Ez Post Abutment MINI (ST) STEA 4711 T": {
-                        "4.5": {
-                            1.0: {
-                                7.0: {"name": "Ez Post Abutment MINI (ST) STEA 4711 T", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 22 },
+                        "0": {
+                            4.5: {
+                                1.0: {
+                                    7.0: {"name": "Ez Post Abutment MINI (ST) STEA 4711 T", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 22 },
+                                },
                             },
                         },
                     },
                     "Ez Post Abutment MINI (ST) STEA 4721 T": {
-                        "4.5": {
-                            2.0: {
-                                7.0: {"name": "Ez Post Abutment MINI (ST) STEA 4721 T", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 58 },
+                        "0": {
+                            4.5: {
+                                2.0: {
+                                    7.0: {"name": "Ez Post Abutment MINI (ST) STEA 4721 T", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 58 },
+                                },
                             },
                         },
                     },
                     "Ez Post Abutment MINI (ST) STEA 4731 T": {
-                        "4.5": {
-                            3.0: {
-                                7.0: {"name": "Ez Post Abutment MINI (ST) STEA 4731 T", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 2 },
+                        "0": {
+                            4.5: {
+                                3.0: {
+                                    7.0: {"name": "Ez Post Abutment MINI (ST) STEA 4731 T", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 2 },
+                                },
                             },
                         },
                     },
                     "Ez Post Abutment MINI (ST) STEA 4741 T": {
-                        "4.5": {
-                            4.0: {
-                                7.0: {"name": "Ez Post Abutment MINI (ST) STEA 4741 T", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 18 },
+                        "0": {
+                            4.5: {
+                                4.0: {
+                                    7.0: {"name": "Ez Post Abutment MINI (ST) STEA 4741 T", "sku": "HA-AR-45-15-25-ST", "unit": "шт", "qty": 18 },
+                                },
+                            },
+                        },
+                    },
+            },
+            "тип": {
+                    "EZ Post Abutment (AO) EP 4525 HT": {
+                        "0": {
+                            4.5: {
+                                2.5: {
+                                    5.0: {"name": "EZ Post Abutment (AO) EP 4525 HT", "sku": "EP-AR-45-20-25-ST", "unit": "шт", "qty": 36 },
+                                },
+                            },
+                        },
+                    },
+            },
+        },
+        "MU": {
+            "AnyOne": {
+                    "Multi-Unit (AO) MUAAOH1725TC": {
+                        "17": {
+                            4.8: {
+                                2.5: {"name": "Multi-Unit (AO) MUAAOH1725TC", "sku": "MULTI-UNIT-D48-L25-17", "unit": "шт", "qty": 40 },
+                            },
+                        },
+                    },
+                    "Multi-Unit (AO) MUAAOH1735TC": {
+                        "17": {
+                            4.8: {
+                                3.5: {"name": "Multi-Unit (AO) MUAAOH1735TC", "sku": "MULTI-UNIT-D48-L35-17", "unit": "шт", "qty": 60 },
+                            },
+                        },
+                    },
+                    "Multi-Unit (AO) MUAAOH1745TC": {
+                        "17": {
+                            4.8: {
+                                4.5: {"name": "Multi-Unit (AO) MUAAOH1745TC", "sku": "MULTI-UNIT-D48-L45-17", "unit": "шт", "qty": 10 },
+                            },
+                        },
+                    },
+                    "Multi-Unit (AO) MUAAOH3035TC": {
+                        "30": {
+                            4.8: {
+                                3.5: {"name": "Multi-Unit (AO) MUAAOH3035TC", "sku": "MULTI-UNIT-D48-L35-30", "unit": "шт", "qty": 26 },
+                            },
+                        },
+                    },
+                    "Multi-Unit (AO) MUAAOH3045TC": {
+                        "30": {
+                            4.8: {
+                                4.5: {"name": "Multi-Unit (AO) MUAAOH3045TC", "sku": "MULTI-UNIT-D48-L45-30", "unit": "шт", "qty": 19 },
+                            },
+                        },
+                    },
+                    "Multi-Unit (AO) MUAAON0015C": {
+                        "0": {
+                            4.8: {
+                                1.5: {"name": "Multi-Unit (AO) MUAAON0015C", "sku": "MULTI-UNIT-D48-L15-0", "unit": "шт", "qty": 53 },
+                            },
+                        },
+                    },
+                    "Multi-Unit (AO) MUAAON0025C": {
+                        "0": {
+                            4.8: {
+                                2.5: {"name": "Multi-Unit (AO) MUAAON0025C", "sku": "MULTI-UNIT-D48-L25-0", "unit": "шт", "qty": 26 },
+                            },
+                        },
+                    },
+                    "Multi-Unit (AO) MUAAON0035C": {
+                        "0": {
+                            4.8: {
+                                3.5: {"name": "Multi-Unit (AO) MUAAON0035C", "sku": "MULTI-UNIT-D48-L35-0", "unit": "шт", "qty": 24 },
+                            },
+                        },
+                    },
+                    "Multi-Unit (AO) MUAAON0045C": {
+                        "0": {
+                            4.8: {
+                                4.5: {"name": "Multi-Unit (AO) MUAAON0045C", "sku": "MULTI-UNIT-D48-L45-0", "unit": "шт", "qty": 33 },
+                            },
+                        },
+                    },
+                    "Multi-Unit (AO) MUAAON1725TC Non-Hex": {
+                        "17": {
+                            4.8: {
+                                2.5: {"name": "Multi-Unit (AO) MUAAON1725TC Non-Hex", "sku": "MULTI-UNIT-D48-L25-17", "unit": "шт", "qty": 74 },
+                            },
+                        },
+                    },
+                    "Multi-Unit (AO) MUAAON1745TC non-hex": {
+                        "17": {
+                            4.8: {
+                                4.5: {"name": "Multi-Unit (AO) MUAAON1745TC non-hex", "sku": "MULTI-UNIT-D48-L45-17", "unit": "шт", "qty": 39 },
+                            },
+                        },
+                    },
+            },
+            "AnyRidge": {
+                    "Multi-Unit (AR) MUAARH1725LC": {
+                        "17": {
+                            4.8: {
+                                2.5: {"name": "Multi-Unit (AR) MUAARH1725LC", "sku": "MULTI-UNIT-D48-L25-17", "unit": "шт", "qty": 13 },
+                            },
+                        },
+                    },
+                    "Multi-Unit (AR) MUAARH1735LC": {
+                        "17": {
+                            4.8: {
+                                3.5: {"name": "Multi-Unit (AR) MUAARH1735LC", "sku": "MULTI-UNIT-D48-L35-17", "unit": "шт", "qty": 34 },
+                            },
+                        },
+                    },
+                    "Multi-Unit (AR) MUAARH1745LC": {
+                        "17": {
+                            4.8: {
+                                4.5: {"name": "Multi-Unit (AR) MUAARH1745LC", "sku": "MULTI-UNIT-D48-L45-17", "unit": "шт", "qty": 23 },
+                            },
+                        },
+                    },
+                    "Multi-Unit (AR) MUAARH3035LC": {
+                        "30": {
+                            4.8: {
+                                3.5: {"name": "Multi-Unit (AR) MUAARH3035LC", "sku": "MULTI-UNIT-D48-L35-30", "unit": "шт", "qty": 10 },
+                            },
+                        },
+                    },
+                    "Multi-Unit (AR) MUAARH3045LC": {
+                        "30": {
+                            4.8: {
+                                4.5: {"name": "Multi-Unit (AR) MUAARH3045LC", "sku": "MULTI-UNIT-D48-L45-30", "unit": "шт", "qty": 9 },
+                            },
+                        },
+                    },
+                    "Multi-Unit (AR) MUAARN0015C": {
+                        "0": {
+                            4.8: {
+                                1.5: {"name": "Multi-Unit (AR) MUAARN0015C", "sku": "MULTI-UNIT-D48-L15-0", "unit": "шт", "qty": 9 },
+                            },
+                        },
+                    },
+                    "Multi-Unit (AR) MUAARN0025C": {
+                        "0": {
+                            4.8: {
+                                2.5: {"name": "Multi-Unit (AR) MUAARN0025C", "sku": "MULTI-UNIT-D48-L25-0", "unit": "шт", "qty": 36 },
+                            },
+                        },
+                    },
+                    "Multi-Unit (AR) MUAARN0035C": {
+                        "0": {
+                            4.8: {
+                                3.5: {"name": "Multi-Unit (AR) MUAARN0035C", "sku": "MULTI-UNIT-D48-L35-0", "unit": "шт", "qty": 8 },
+                            },
+                        },
+                    },
+                    "Multi-Unit (AR) MUAARN0045C": {
+                        "0": {
+                            4.8: {
+                                4.5: {"name": "Multi-Unit (AR) MUAARN0045C", "sku": "MULTI-UNIT-D48-L45-0", "unit": "шт", "qty": 5 },
+                            },
+                        },
+                    },
+                    "Multi-Unit (AR) MUAARN1725LC Non-Hex": {
+                        "17": {
+                            4.8: {
+                                2.5: {"name": "Multi-Unit (AR) MUAARN1725LC Non-Hex", "sku": "MULTI-UNIT-D48-L25-17", "unit": "шт", "qty": 5 },
+                            },
+                        },
+                    },
+                    "Multi-Unit (AR) MUAARN1735LC Non-Hex": {
+                        "17": {
+                            4.8: {
+                                3.5: {"name": "Multi-Unit (AR) MUAARN1735LC Non-Hex", "sku": "MULTI-UNIT-D48-L35-17", "unit": "шт", "qty": 14 },
+                            },
+                        },
+                    },
+                    "Multi-Unit (AR) MUAARN3035LC Non-Hex": {
+                        "30": {
+                            4.8: {
+                                3.5: {"name": "Multi-Unit (AR) MUAARN3035LC Non-Hex", "sku": "MULTI-UNIT-D48-L35-30", "unit": "шт", "qty": 14 },
+                            },
+                        },
+                    },
+                    "Multi-Unit (AR) MUAARN3045LC Non-Hex": {
+                        "30": {
+                            4.8: {
+                                4.5: {"name": "Multi-Unit (AR) MUAARN3045LC Non-Hex", "sku": "MULTI-UNIT-D48-L45-30", "unit": "шт", "qty": 1 },
+                            },
+                        },
+                    },
+            },
+            "BD NC": {
+                    "Multi-unit (BD) NC MUAARONN0015C": {
+                        "0": {
+                            4.8: {
+                                1.5: {"name": "Multi-unit (BD) NC MUAARONN0015C", "sku": "MULTI-UNIT-D48-L15-0", "unit": "шт", "qty": 2 },
+                            },
+                        },
+                    },
+                    "Multi-unit (BD) NC MUAARONN0025C": {
+                        "0": {
+                            4.8: {
+                                2.5: {"name": "Multi-unit (BD) NC MUAARONN0025C", "sku": "MULTI-UNIT-D48-L25-0", "unit": "шт", "qty": 4 },
+                            },
+                        },
+                    },
+                    "Multi-unit (BD) NC MUAARONN0035C": {
+                        "0": {
+                            4.8: {
+                                3.5: {"name": "Multi-unit (BD) NC MUAARONN0035C", "sku": "MULTI-UNIT-D48-L35-0", "unit": "шт", "qty": 10 },
+                            },
+                        },
+                    },
+                    "Multi-unit (BD) NC MUAARONN0045C": {
+                        "0": {
+                            4.8: {
+                                4.5: {"name": "Multi-unit (BD) NC MUAARONN0045C", "sku": "MULTI-UNIT-D48-L45-0", "unit": "шт", "qty": 4 },
+                            },
+                        },
+                    },
+                    "Multi-unit (BD) NC MUAARONO1725TC": {
+                        "17": {
+                            4.8: {
+                                2.5: {"name": "Multi-unit (BD) NC MUAARONO1725TC", "sku": "MULTI-UNIT-D48-L25-17", "unit": "шт", "qty": 7 },
+                            },
+                        },
+                    },
+                    "Multi-unit (BD) NC MUAARONO1735TC": {
+                        "17": {
+                            4.8: {
+                                3.5: {"name": "Multi-unit (BD) NC MUAARONO1735TC", "sku": "MULTI-UNIT-D48-L35-17", "unit": "шт", "qty": 7 },
+                            },
+                        },
+                    },
+                    "Multi-unit (BD) NC MUAARONO1745TC": {
+                        "17": {
+                            4.8: {
+                                4.5: {"name": "Multi-unit (BD) NC MUAARONO1745TC", "sku": "MULTI-UNIT-D48-L45-17", "unit": "шт", "qty": 14 },
+                            },
+                        },
+                    },
+                    "Multi-unit (BD) NC MUAARONO3035TC": {
+                        "30": {
+                            4.8: {
+                                3.5: {"name": "Multi-unit (BD) NC MUAARONO3035TC", "sku": "MULTI-UNIT-D48-L35-30", "unit": "шт", "qty": 21 },
+                            },
+                        },
+                    },
+                    "Multi-unit (BD) NC MUAARONO3045TC": {
+                        "30": {
+                            4.8: {
+                                4.5: {"name": "Multi-unit (BD) NC MUAARONO3045TC", "sku": "MULTI-UNIT-D48-L45-30", "unit": "шт", "qty": 7 },
+                            },
+                        },
+                    },
+            },
+            "BD RC": {
+                    "Multi-unit (BD) RC MUAARORN 0015C": {
+                        "0": {
+                            4.8: {
+                                1.5: {"name": "Multi-unit (BD) RC MUAARORN 0015C", "sku": "MULTI-UNIT-D48-L15-0", "unit": "шт", "qty": 12 },
+                            },
+                        },
+                    },
+                    "Multi-unit (BD) RC MUAARORN 0025C": {
+                        "0": {
+                            4.8: {
+                                2.5: {"name": "Multi-unit (BD) RC MUAARORN 0025C", "sku": "MULTI-UNIT-D48-L25-0", "unit": "шт", "qty": 30 },
+                            },
+                        },
+                    },
+                    "Multi-unit (BD) RC MUAARORN 0035C": {
+                        "0": {
+                            4.8: {
+                                3.5: {"name": "Multi-unit (BD) RC MUAARORN 0035C", "sku": "MULTI-UNIT-D48-L35-0", "unit": "шт", "qty": 14 },
+                            },
+                        },
+                    },
+                    "Multi-unit (BD) RC MUAARORN 0045C": {
+                        "0": {
+                            4.8: {
+                                4.5: {"name": "Multi-unit (BD) RC MUAARORN 0045C", "sku": "MULTI-UNIT-D48-L45-0", "unit": "шт", "qty": 17 },
+                            },
+                        },
+                    },
+                    "Multi-unit (BD) RC MUAARORO1725TC": {
+                        "17": {
+                            4.8: {
+                                2.5: {"name": "Multi-unit (BD) RC MUAARORO1725TC", "sku": "MULTI-UNIT-D48-L25-17", "unit": "шт", "qty": 10 },
+                            },
+                        },
+                    },
+                    "Multi-unit (BD) RC MUAARORO1735TC": {
+                        "17": {
+                            4.8: {
+                                3.5: {"name": "Multi-unit (BD) RC MUAARORO1735TC", "sku": "MULTI-UNIT-D48-L35-17", "unit": "шт", "qty": 13 },
+                            },
+                        },
+                    },
+                    "Multi-unit (BD) RC MUAARORO3035TC": {
+                        "30": {
+                            4.8: {
+                                3.5: {"name": "Multi-unit (BD) RC MUAARORO3035TC", "sku": "MULTI-UNIT-D48-L35-30", "unit": "шт", "qty": 13 },
                             },
                         },
                     },
@@ -1148,584 +1525,679 @@ CATALOG = {
         "Формик": {
             "AnyOne": {
                     "Formiravatel (AO) HA 4030": {
-                        "4.0": {
-                            3.0: {
+                        "0": {
+                            4.0: {
+                                3.0: {"name": "Formiravatel (AO) HA 4030", "sku": "FORMIRAVAT-D40-L30-0", "unit": "шт", "qty": 13 },
                             },
                         },
                     },
                     "Formiravatel (AO) HA 4040": {
-                        "4.0": {
+                        "0": {
                             4.0: {
+                                4.0: {"name": "Formiravatel (AO) HA 4040", "sku": "FORMIRAVAT-D40-L40-0", "unit": "шт", "qty": 15 },
                             },
                         },
                     },
                     "Formiravatel (AO) HA 4050": {
-                        "4.0": {
-                            5.0: {
+                        "0": {
+                            4.0: {
+                                5.0: {"name": "Formiravatel (AO) HA 4050", "sku": "FORMIRAVAT-D40-L50-0", "unit": "шт", "qty": 27 },
                             },
                         },
                     },
                     "Formiravatel (AO) HA 4060": {
-                        "4.0": {
-                            6.0: {
+                        "0": {
+                            4.0: {
+                                6.0: {"name": "Formiravatel (AO) HA 4060", "sku": "FORMIRAVAT-D40-L60-0", "unit": "шт", "qty": 13 },
                             },
                         },
                     },
                     "Formiravatel (AO) HA 4070": {
-                        "4.0": {
-                            7.0: {
+                        "0": {
+                            4.0: {
+                                7.0: {"name": "Formiravatel (AO) HA 4070", "sku": "FORMIRAVAT-D40-L70-0", "unit": "шт", "qty": 30 },
                             },
                         },
                     },
                     "Formiravatel (AO) HA 4530": {
-                        "4.5": {
-                            3.0: {
+                        "0": {
+                            4.5: {
+                                3.0: {"name": "Formiravatel (AO) HA 4530", "sku": "FORMIRAVAT-D45-L30-0", "unit": "шт", "qty": 12 },
                             },
                         },
                     },
                     "Formiravatel (AO) HA 4540": {
-                        "4.5": {
-                            4.0: {
+                        "0": {
+                            4.5: {
+                                4.0: {"name": "Formiravatel (AO) HA 4540", "sku": "FORMIRAVAT-D45-L40-0", "unit": "шт", "qty": 7 },
                             },
                         },
                     },
                     "Formiravatel (AO) HA 4550": {
-                        "4.5": {
-                            5.0: {
+                        "0": {
+                            4.5: {
+                                5.0: {"name": "Formiravatel (AO) HA 4550", "sku": "FORMIRAVAT-D45-L50-0", "unit": "шт", "qty": 27 },
                             },
                         },
                     },
                     "Formiravatel (AO) HA 4560": {
-                        "4.5": {
-                            6.0: {
+                        "0": {
+                            4.5: {
+                                6.0: {"name": "Formiravatel (AO) HA 4560", "sku": "FORMIRAVAT-D45-L60-0", "unit": "шт", "qty": 13 },
                             },
                         },
                     },
                     "Formiravatel (AO) HA 4570": {
-                        "4.5": {
-                            7.0: {
+                        "0": {
+                            4.5: {
+                                7.0: {"name": "Formiravatel (AO) HA 4570", "sku": "FORMIRAVAT-D45-L70-0", "unit": "шт", "qty": 8 },
                             },
                         },
                     },
                     "Formiravatel (AO) HA 5530": {
-                        "5.5": {
-                            3.0: {
+                        "0": {
+                            5.5: {
+                                3.0: {"name": "Formiravatel (AO) HA 5530", "sku": "FORMIRAVAT-D55-L30-0", "unit": "шт", "qty": 5 },
                             },
                         },
                     },
                     "Formiravatel (AO) HA 5540": {
-                        "5.5": {
-                            4.0: {
+                        "0": {
+                            5.5: {
+                                4.0: {"name": "Formiravatel (AO) HA 5540", "sku": "FORMIRAVAT-D55-L40-0", "unit": "шт", "qty": 4 },
                             },
                         },
                     },
                     "Formiravatel (AO) HA 5550": {
-                        "5.5": {
-                            5.0: {
+                        "0": {
+                            5.5: {
+                                5.0: {"name": "Formiravatel (AO) HA 5550", "sku": "FORMIRAVAT-D55-L50-0", "unit": "шт", "qty": 18 },
                             },
                         },
                     },
                     "Formiravatel (AO) HA 5560": {
-                        "5.5": {
-                            6.0: {
+                        "0": {
+                            5.5: {
+                                6.0: {"name": "Formiravatel (AO) HA 5560", "sku": "FORMIRAVAT-D55-L60-0", "unit": "шт", "qty": 25 },
                             },
                         },
                     },
                     "Formiravatel (AO) HA 5570": {
-                        "5.5": {
-                            7.0: {
+                        "0": {
+                            5.5: {
+                                7.0: {"name": "Formiravatel (AO) HA 5570", "sku": "FORMIRAVAT-D55-L70-0", "unit": "шт", "qty": 4 },
                             },
                         },
                     },
                     "Formiravatel (AO) HA 6530": {
-                        "6.5": {
-                            3.0: {
+                        "0": {
+                            6.5: {
+                                3.0: {"name": "Formiravatel (AO) HA 6530", "sku": "FORMIRAVAT-D65-L30-0", "unit": "шт", "qty": 4 },
                             },
                         },
                     },
                     "Formiravatel (AO) HA 6540": {
-                        "6.5": {
-                            4.0: {
+                        "0": {
+                            6.5: {
+                                4.0: {"name": "Formiravatel (AO) HA 6540", "sku": "FORMIRAVAT-D65-L40-0", "unit": "шт", "qty": 25 },
                             },
                         },
                     },
                     "Formiravatel (AO) HA 6550": {
-                        "6.5": {
-                            5.0: {
+                        "0": {
+                            6.5: {
+                                5.0: {"name": "Formiravatel (AO) HA 6550", "sku": "FORMIRAVAT-D65-L50-0", "unit": "шт", "qty": 30 },
                             },
                         },
                     },
                     "Formiravatel (AO) HA 6560": {
-                        "6.5": {
-                            6.0: {
+                        "0": {
+                            6.5: {
+                                6.0: {"name": "Formiravatel (AO) HA 6560", "sku": "FORMIRAVAT-D65-L60-0", "unit": "шт", "qty": 7 },
                             },
                         },
                     },
                     "Formiravatel (AO) HA 7540": {
-                        "7.5": {
-                            4.0: {
+                        "0": {
+                            7.5: {
+                                4.0: {"name": "Formiravatel (AO) HA 7540", "sku": "FORMIRAVAT-D75-L40-0", "unit": "шт", "qty": 3 },
                             },
                         },
                     },
                     "Formiravatel (AO) HA 7550": {
-                        "7.5": {
-                            5.0: {
+                        "0": {
+                            7.5: {
+                                5.0: {"name": "Formiravatel (AO) HA 7550", "sku": "FORMIRAVAT-D75-L50-0", "unit": "шт", "qty": 4 },
                             },
                         },
                     },
                     "Formiravatel (AO) HA 8540": {
-                        "8.5": {
-                            4.0: {
+                        "0": {
+                            8.5: {
+                                4.0: {"name": "Formiravatel (AO) HA 8540", "sku": "FORMIRAVAT-D85-L40-0", "unit": "шт", "qty": 4 },
                             },
                         },
                     },
                     "Formiravatel (AO) HA 8550": {
-                        "8.5": {
-                            5.0: {
+                        "0": {
+                            8.5: {
+                                5.0: {"name": "Formiravatel (AO) HA 8550", "sku": "FORMIRAVAT-D85-L50-0", "unit": "шт", "qty": 4 },
                             },
                         },
                     },
                     "Formiravatel (AO) HA 9540": {
-                        "9.5": {
-                            4.0: {
+                        "0": {
+                            9.5: {
+                                4.0: {"name": "Formiravatel (AO) HA 9540", "sku": "FORMIRAVAT-D95-L40-0", "unit": "шт", "qty": 4 },
                             },
                         },
                     },
                     "Formiravatel (AO) HA 9550": {
-                        "9.5": {
-                            5.0: {
+                        "0": {
+                            9.5: {
+                                5.0: {"name": "Formiravatel (AO) HA 9550", "sku": "FORMIRAVAT-D95-L50-0", "unit": "шт", "qty": 4 },
                             },
                         },
                     },
             },
             "AnyRidge": {
                     "Formiravatel (AR) AANHAF0403": {
-                        "4.0": {
-                            3.0: {
+                        "0": {
+                            4.0: {
+                                3.0: {"name": "Formiravatel (AR) AANHAF0403", "sku": "FORMIRAVAT-D40-L30-0", "unit": "шт", "qty": 5 },
                             },
                         },
                     },
                     "Formiravatel (AR) AANHAF0404": {
-                        "4.0": {
+                        "0": {
                             4.0: {
+                                4.0: {"name": "Formiravatel (AR) AANHAF0404", "sku": "FORMIRAVAT-D40-L40-0", "unit": "шт", "qty": 13 },
                             },
                         },
                     },
                     "Formiravatel (AR) AANHAF0405": {
-                        "4.0": {
-                            5.0: {
+                        "0": {
+                            4.0: {
+                                5.0: {"name": "Formiravatel (AR) AANHAF0405", "sku": "FORMIRAVAT-D40-L50-0", "unit": "шт", "qty": 51 },
                             },
                         },
                     },
                     "Formiravatel (AR) AANHAF0406": {
-                        "4.0": {
-                            6.0: {
+                        "0": {
+                            4.0: {
+                                6.0: {"name": "Formiravatel (AR) AANHAF0406", "sku": "FORMIRAVAT-D40-L60-0", "unit": "шт", "qty": 72 },
                             },
                         },
                     },
                     "Formiravatel (AR) AANHAF0407": {
-                        "4.0": {
-                            7.0: {
+                        "0": {
+                            4.0: {
+                                7.0: {"name": "Formiravatel (AR) AANHAF0407", "sku": "FORMIRAVAT-D40-L70-0", "unit": "шт", "qty": 93 },
                             },
                         },
                     },
                     "Formiravatel (AR) AANHAF0504": {
-                        "5.0": {
-                            4.0: {
+                        "0": {
+                            5.0: {
+                                4.0: {"name": "Formiravatel (AR) AANHAF0504", "sku": "FORMIRAVAT-D50-L40-0", "unit": "шт", "qty": 21 },
                             },
                         },
                     },
                     "Formiravatel (AR) AANHAF0505": {
-                        "5.0": {
+                        "0": {
                             5.0: {
+                                5.0: {"name": "Formiravatel (AR) AANHAF0505", "sku": "FORMIRAVAT-D50-L50-0", "unit": "шт", "qty": 47 },
                             },
                         },
                     },
                     "Formiravatel (AR) AANHAF0506": {
-                        "5.0": {
-                            6.0: {
+                        "0": {
+                            5.0: {
+                                6.0: {"name": "Formiravatel (AR) AANHAF0506", "sku": "FORMIRAVAT-D50-L60-0", "unit": "шт", "qty": 44 },
                             },
                         },
                     },
                     "Formiravatel (AR) AANHAF0507": {
-                        "5.0": {
-                            7.0: {
+                        "0": {
+                            5.0: {
+                                7.0: {"name": "Formiravatel (AR) AANHAF0507", "sku": "FORMIRAVAT-D50-L70-0", "unit": "шт", "qty": 51 },
                             },
                         },
                     },
                     "Formiravatel (AR) AANHAF0603": {
-                        "6.0": {
-                            3.0: {
+                        "0": {
+                            6.0: {
+                                3.0: {"name": "Formiravatel (AR) AANHAF0603", "sku": "FORMIRAVAT-D60-L30-0", "unit": "шт", "qty": 4 },
                             },
                         },
                     },
                     "Formiravatel (AR) AANHAF0604": {
-                        "6.0": {
-                            4.0: {
+                        "0": {
+                            6.0: {
+                                4.0: {"name": "Formiravatel (AR) AANHAF0604", "sku": "FORMIRAVAT-D60-L40-0", "unit": "шт", "qty": 15 },
                             },
                         },
                     },
                     "Formiravatel (AR) AANHAF0605": {
-                        "6.0": {
-                            5.0: {
+                        "0": {
+                            6.0: {
+                                5.0: {"name": "Formiravatel (AR) AANHAF0605", "sku": "FORMIRAVAT-D60-L50-0", "unit": "шт", "qty": 8 },
                             },
                         },
                     },
                     "Formiravatel (AR) AANHAF0606": {
-                        "6.0": {
+                        "0": {
                             6.0: {
+                                6.0: {"name": "Formiravatel (AR) AANHAF0606", "sku": "FORMIRAVAT-D60-L60-0", "unit": "шт", "qty": 22 },
                             },
                         },
                     },
                     "Formiravatel (AR) AANHAF0607": {
-                        "6.0": {
-                            7.0: {
+                        "0": {
+                            6.0: {
+                                7.0: {"name": "Formiravatel (AR) AANHAF0607", "sku": "FORMIRAVAT-D60-L70-0", "unit": "шт", "qty": 13 },
                             },
                         },
                     },
                     "Formiravatel (AR) AANHAF0703": {
-                        "7.0": {
-                            3.0: {
+                        "0": {
+                            7.0: {
+                                3.0: {"name": "Formiravatel (AR) AANHAF0703", "sku": "FORMIRAVAT-D70-L30-0", "unit": "шт", "qty": 4 },
                             },
                         },
                     },
                     "Formiravatel (AR) AANHAF0704": {
-                        "7.0": {
-                            4.0: {
+                        "0": {
+                            7.0: {
+                                4.0: {"name": "Formiravatel (AR) AANHAF0704", "sku": "FORMIRAVAT-D70-L40-0", "unit": "шт", "qty": 6 },
                             },
                         },
                     },
                     "Formiravatel (AR) AANHAF0705": {
-                        "7.0": {
-                            5.0: {
+                        "0": {
+                            7.0: {
+                                5.0: {"name": "Formiravatel (AR) AANHAF0705", "sku": "FORMIRAVAT-D70-L50-0", "unit": "шт", "qty": 10 },
                             },
                         },
                     },
                     "Formiravatel (AR) AANHAF0706": {
-                        "7.0": {
-                            6.0: {
+                        "0": {
+                            7.0: {
+                                6.0: {"name": "Formiravatel (AR) AANHAF0706", "sku": "FORMIRAVAT-D70-L60-0", "unit": "шт", "qty": 14 },
                             },
                         },
                     },
                     "Formiravatel (AR) AANHAF0803": {
-                        "8.0": {
-                            3.0: {
+                        "0": {
+                            8.0: {
+                                3.0: {"name": "Formiravatel (AR) AANHAF0803", "sku": "FORMIRAVAT-D80-L30-0", "unit": "шт", "qty": 7 },
                             },
                         },
                     },
                     "Formiravatel (AR) AANHAF0804": {
-                        "8.0": {
-                            4.0: {
+                        "0": {
+                            8.0: {
+                                4.0: {"name": "Formiravatel (AR) AANHAF0804", "sku": "FORMIRAVAT-D80-L40-0", "unit": "шт", "qty": 4 },
                             },
                         },
                     },
                     "Formiravatel (AR) AANHAF1003": {
-                        "10.0": {
-                            3.0: {
+                        "0": {
+                            10.0: {
+                                3.0: {"name": "Formiravatel (AR) AANHAF1003", "sku": "FORMIRAVAT-D100-L30-0", "unit": "шт", "qty": 4 },
                             },
                         },
                     },
                     "Formiravatel (AR) AANHAF1004": {
-                        "10.0": {
-                            4.0: {
+                        "0": {
+                            10.0: {
+                                4.0: {"name": "Formiravatel (AR) AANHAF1004", "sku": "FORMIRAVAT-D100-L40-0", "unit": "шт", "qty": 3 },
                             },
                         },
                     },
                     "Formiravatel (AR) AANHAF1005": {
-                        "10.0": {
-                            5.0: {
+                        "0": {
+                            10.0: {
+                                5.0: {"name": "Formiravatel (AR) AANHAF1005", "sku": "FORMIRAVAT-D100-L50-0", "unit": "шт", "qty": 5 },
                             },
                         },
                     },
                     "Formiravatel (AR) AANHAF1006": {
-                        "10.0": {
-                            6.0: {
+                        "0": {
+                            10.0: {
+                                6.0: {"name": "Formiravatel (AR) AANHAF1006", "sku": "FORMIRAVAT-D100-L60-0", "unit": "шт", "qty": 8 },
                             },
                         },
                     },
             },
             "BD NC": {
                     "Formiravatel NC AROHAN402": {
-                        "4.0": {
-                            2.0: {
+                        "0": {
+                            4.0: {
+                                2.0: {"name": "Formiravatel NC AROHAN402", "sku": "FORMIRAVAT-D40-L20-0", "unit": "шт", "qty": 2 },
                             },
                         },
                     },
                     "Formiravatel NC AROHAN403": {
-                        "4.0": {
-                            3.0: {
+                        "0": {
+                            4.0: {
+                                3.0: {"name": "Formiravatel NC AROHAN403", "sku": "FORMIRAVAT-D40-L30-0", "unit": "шт", "qty": 4 },
                             },
                         },
                     },
                     "Formiravatel NC AROHAN405": {
-                        "4.0": {
-                            5.0: {
+                        "0": {
+                            4.0: {
+                                5.0: {"name": "Formiravatel NC AROHAN405", "sku": "FORMIRAVAT-D40-L50-0", "unit": "шт", "qty": 10 },
                             },
                         },
                     },
                     "Formiravatel NC AROHAN406": {
-                        "4.0": {
-                            6.0: {
+                        "0": {
+                            4.0: {
+                                6.0: {"name": "Formiravatel NC AROHAN406", "sku": "FORMIRAVAT-D40-L60-0", "unit": "шт", "qty": 4 },
                             },
                         },
                     },
                     "Formiravatel NC AROHAN504": {
-                        "5.0": {
-                            4.0: {
+                        "0": {
+                            5.0: {
+                                4.0: {"name": "Formiravatel NC AROHAN504", "sku": "FORMIRAVAT-D50-L40-0", "unit": "шт", "qty": 7 },
                             },
                         },
                     },
                     "Formiravatel NC AROHAN505": {
-                        "5.0": {
+                        "0": {
                             5.0: {
+                                5.0: {"name": "Formiravatel NC AROHAN505", "sku": "FORMIRAVAT-D50-L50-0", "unit": "шт", "qty": 7 },
                             },
                         },
                     },
             },
             "BD RC": {
                     "Formiravatel RC AROHAR404": {
-                        "4.0": {
+                        "0": {
                             4.0: {
+                                4.0: {"name": "Formiravatel RC AROHAR404", "sku": "FORMIRAVAT-D40-L40-0", "unit": "шт", "qty": 14 },
                             },
                         },
                     },
                     "Formiravatel RC AROHAR405": {
-                        "4.0": {
-                            5.0: {
+                        "0": {
+                            4.0: {
+                                5.0: {"name": "Formiravatel RC AROHAR405", "sku": "FORMIRAVAT-D40-L50-0", "unit": "шт", "qty": 21 },
                             },
                         },
                     },
                     "Formiravatel RC AROHAR406": {
-                        "4.0": {
-                            6.0: {
+                        "0": {
+                            4.0: {
+                                6.0: {"name": "Formiravatel RC AROHAR406", "sku": "FORMIRAVAT-D40-L60-0", "unit": "шт", "qty": 7 },
                             },
                         },
                     },
                     "Formiravatel RC AROHAR504": {
-                        "5.0": {
-                            4.0: {
+                        "0": {
+                            5.0: {
+                                4.0: {"name": "Formiravatel RC AROHAR504", "sku": "FORMIRAVAT-D50-L40-0", "unit": "шт", "qty": 12 },
                             },
                         },
                     },
                     "Formiravatel RC AROHAR505": {
-                        "5.0": {
+                        "0": {
                             5.0: {
+                                5.0: {"name": "Formiravatel RC AROHAR505", "sku": "FORMIRAVAT-D50-L50-0", "unit": "шт", "qty": 30 },
                             },
                         },
                     },
                     "Formiravatel RC AROHAR506": {
-                        "5.0": {
-                            6.0: {
+                        "0": {
+                            5.0: {
+                                6.0: {"name": "Formiravatel RC AROHAR506", "sku": "FORMIRAVAT-D50-L60-0", "unit": "шт", "qty": 14 },
                             },
                         },
                     },
                     "Formiravatel RC AROHAR604": {
-                        "6.0": {
-                            4.0: {
+                        "0": {
+                            6.0: {
+                                4.0: {"name": "Formiravatel RC AROHAR604", "sku": "FORMIRAVAT-D60-L40-0", "unit": "шт", "qty": 17 },
                             },
                         },
                     },
                     "Formiravatel RC AROHAR605": {
-                        "6.0": {
-                            5.0: {
+                        "0": {
+                            6.0: {
+                                5.0: {"name": "Formiravatel RC AROHAR605", "sku": "FORMIRAVAT-D60-L50-0", "unit": "шт", "qty": 10 },
                             },
                         },
                     },
                     "Formiravatel RC AROHAR606": {
-                        "6.0": {
+                        "0": {
                             6.0: {
+                                6.0: {"name": "Formiravatel RC AROHAR606", "sku": "FORMIRAVAT-D60-L60-0", "unit": "шт", "qty": 13 },
                             },
                         },
                     },
             },
             "Mini": {
                     "Formiravatel (MINI) MIHA3040": {
-                        "3.0": {
-                            4.0: {
+                        "0": {
+                            3.0: {
+                                4.0: {"name": "Formiravatel (MINI) MIHA3040", "sku": "FORMIRAVAT-D30-L40-0", "unit": "шт", "qty": 3 },
                             },
                         },
                     },
                     "Formiravatel (MINI) MIHA3050": {
-                        "3.0": {
-                            5.0: {
+                        "0": {
+                            3.0: {
+                                5.0: {"name": "Formiravatel (MINI) MIHA3050", "sku": "FORMIRAVAT-D30-L50-0", "unit": "шт", "qty": 6 },
                             },
                         },
                     },
                     "Formiravatel (MINI) MIHA3060": {
-                        "3.0": {
-                            6.0: {
+                        "0": {
+                            3.0: {
+                                6.0: {"name": "Formiravatel (MINI) MIHA3060", "sku": "FORMIRAVAT-D30-L60-0", "unit": "шт", "qty": 7 },
                             },
                         },
                     },
                     "Formiravatel (MINI) MIHA3080": {
-                        "3.0": {
-                            8.0: {
+                        "0": {
+                            3.0: {
+                                8.0: {"name": "Formiravatel (MINI) MIHA3080", "sku": "FORMIRAVAT-D30-L80-0", "unit": "шт", "qty": 1 },
                             },
                         },
                     },
                     "Formiravatel (MINI) MIHA3550": {
-                        "3.5": {
-                            5.0: {
+                        "0": {
+                            3.5: {
+                                5.0: {"name": "Formiravatel (MINI) MIHA3550", "sku": "FORMIRAVAT-D35-L50-0", "unit": "шт", "qty": 10 },
                             },
                         },
                     },
                     "Formiravatel (MINI) MIHA3560": {
-                        "3.5": {
-                            6.0: {
+                        "0": {
+                            3.5: {
+                                6.0: {"name": "Formiravatel (MINI) MIHA3560", "sku": "FORMIRAVAT-D35-L60-0", "unit": "шт", "qty": 8 },
                             },
                         },
                     },
             },
             "ST": {
                     "Formiravatel (ST) STHA403R": {
-                        "4.0": {
-                            3.0: {
+                        "0": {
+                            4.0: {
+                                3.0: {"name": "Formiravatel (ST) STHA403R", "sku": "FORMIRAVAT-D40-L30-0", "unit": "шт", "qty": 3 },
                             },
                         },
                     },
                     "Formiravatel (ST) STHA404R": {
-                        "4.0": {
+                        "0": {
                             4.0: {
+                                4.0: {"name": "Formiravatel (ST) STHA404R", "sku": "FORMIRAVAT-D40-L40-0", "unit": "шт", "qty": 40 },
                             },
                         },
                     },
                     "Formiravatel (ST) STHA405R": {
-                        "4.0": {
-                            5.0: {
+                        "0": {
+                            4.0: {
+                                5.0: {"name": "Formiravatel (ST) STHA405R", "sku": "FORMIRAVAT-D40-L50-0", "unit": "шт", "qty": 60 },
                             },
                         },
                     },
                     "Formiravatel (ST) STHA407R": {
-                        "4.0": {
-                            7.0: {
+                        "0": {
+                            4.0: {
+                                7.0: {"name": "Formiravatel (ST) STHA407R", "sku": "FORMIRAVAT-D40-L70-0", "unit": "шт", "qty": 10 },
                             },
                         },
                     },
                     "Formiravatel (ST) STHA453R": {
-                        "4.5": {
-                            3.0: {
+                        "0": {
+                            4.5: {
+                                3.0: {"name": "Formiravatel (ST) STHA453R", "sku": "FORMIRAVAT-D45-L30-0", "unit": "шт", "qty": 26 },
                             },
                         },
                     },
                     "Formiravatel (ST) STHA454R": {
-                        "4.5": {
-                            4.0: {
+                        "0": {
+                            4.5: {
+                                4.0: {"name": "Formiravatel (ST) STHA454R", "sku": "FORMIRAVAT-D45-L40-0", "unit": "шт", "qty": 19 },
                             },
                         },
                     },
                     "Formiravatel (ST) STHA455R": {
-                        "4.5": {
-                            5.0: {
+                        "0": {
+                            4.5: {
+                                5.0: {"name": "Formiravatel (ST) STHA455R", "sku": "FORMIRAVAT-D45-L50-0", "unit": "шт", "qty": 53 },
                             },
                         },
                     },
                     "Formiravatel (ST) STHA457R": {
-                        "4.5": {
-                            7.0: {
+                        "0": {
+                            4.5: {
+                                7.0: {"name": "Formiravatel (ST) STHA457R", "sku": "FORMIRAVAT-D45-L70-0", "unit": "шт", "qty": 26 },
                             },
                         },
                     },
                     "Formiravatel (ST) STHA503R": {
-                        "5.0": {
-                            3.0: {
+                        "0": {
+                            5.0: {
+                                3.0: {"name": "Formiravatel (ST) STHA503R", "sku": "FORMIRAVAT-D50-L30-0", "unit": "шт", "qty": 24 },
                             },
                         },
                     },
                     "Formiravatel (ST) STHA504R": {
-                        "5.0": {
-                            4.0: {
+                        "0": {
+                            5.0: {
+                                4.0: {"name": "Formiravatel (ST) STHA504R", "sku": "FORMIRAVAT-D50-L40-0", "unit": "шт", "qty": 33 },
                             },
                         },
                     },
                     "Formiravatel (ST) STHA505R": {
-                        "5.0": {
+                        "0": {
                             5.0: {
+                                5.0: {"name": "Formiravatel (ST) STHA505R", "sku": "FORMIRAVAT-D50-L50-0", "unit": "шт", "qty": 74 },
                             },
                         },
                     },
                     "Formiravatel (ST) STHA507R": {
-                        "5.0": {
-                            7.0: {
+                        "0": {
+                            5.0: {
+                                7.0: {"name": "Formiravatel (ST) STHA507R", "sku": "FORMIRAVAT-D50-L70-0", "unit": "шт", "qty": 39 },
                             },
                         },
                     },
                     "Formiravatel (ST) STHA604R": {
-                        "6.0": {
-                            4.0: {
+                        "0": {
+                            6.0: {
+                                4.0: {"name": "Formiravatel (ST) STHA604R", "sku": "FORMIRAVAT-D60-L40-0", "unit": "шт", "qty": 13 },
                             },
                         },
                     },
                     "Formiravatel (ST) STHA605R": {
-                        "6.0": {
-                            5.0: {
+                        "0": {
+                            6.0: {
+                                5.0: {"name": "Formiravatel (ST) STHA605R", "sku": "FORMIRAVAT-D60-L50-0", "unit": "шт", "qty": 34 },
                             },
                         },
                     },
                     "Formiravatel (ST) STHA607R": {
-                        "6.0": {
-                            7.0: {
+                        "0": {
+                            6.0: {
+                                7.0: {"name": "Formiravatel (ST) STHA607R", "sku": "FORMIRAVAT-D60-L70-0", "unit": "шт", "qty": 23 },
                             },
                         },
                     },
                     "Formiravatel (ST) STHA704R": {
-                        "7.0": {
-                            4.0: {
+                        "0": {
+                            7.0: {
+                                4.0: {"name": "Formiravatel (ST) STHA704R", "sku": "FORMIRAVAT-D70-L40-0", "unit": "шт", "qty": 10 },
                             },
                         },
                     },
             },
             "STMini": {
                     "Formiravatel Mini (ST) STHA403M": {
-                        "4.0": {
-                            3.0: {
+                        "0": {
+                            4.0: {
+                                3.0: {"name": "Formiravatel Mini (ST) STHA403M", "sku": "FORMIRAVAT-D40-L30-0", "unit": "шт", "qty": 9 },
                             },
                         },
                     },
                     "Formiravatel Mini (ST) STHA404M": {
-                        "4.0": {
+                        "0": {
                             4.0: {
+                                4.0: {"name": "Formiravatel Mini (ST) STHA404M", "sku": "FORMIRAVAT-D40-L40-0", "unit": "шт", "qty": 9 },
                             },
                         },
                     },
                     "Formiravatel Mini (ST) STHA405M": {
-                        "4.0": {
-                            5.0: {
+                        "0": {
+                            4.0: {
+                                5.0: {"name": "Formiravatel Mini (ST) STHA405M", "sku": "FORMIRAVAT-D40-L50-0", "unit": "шт", "qty": 36 },
                             },
                         },
                     },
                     "Formiravatel Mini (ST) STHA407M": {
-                        "4.0": {
-                            7.0: {
+                        "0": {
+                            4.0: {
+                                7.0: {"name": "Formiravatel Mini (ST) STHA407M", "sku": "FORMIRAVAT-D40-L70-0", "unit": "шт", "qty": 8 },
                             },
                         },
                     },
                     "Formiravatel Mini (ST) STHA453M": {
-                        "4.5": {
-                            3.0: {
+                        "0": {
+                            4.5: {
+                                3.0: {"name": "Formiravatel Mini (ST) STHA453M", "sku": "FORMIRAVAT-D45-L30-0", "unit": "шт", "qty": 5 },
                             },
                         },
                     },
                     "Formiravatel Mini (ST) STHA454M": {
-                        "4.5": {
-                            4.0: {
+                        "0": {
+                            4.5: {
+                                4.0: {"name": "Formiravatel Mini (ST) STHA454M", "sku": "FORMIRAVAT-D45-L40-0", "unit": "шт", "qty": 5 },
                             },
                         },
                     },
                     "Formiravatel Mini (ST) STHA455M": {
-                        "4.5": {
-                            5.0: {
+                        "0": {
+                            4.5: {
+                                5.0: {"name": "Formiravatel Mini (ST) STHA455M", "sku": "FORMIRAVAT-D45-L50-0", "unit": "шт", "qty": 14 },
                             },
                         },
                     },
                     "Formiravatel Mini (ST) STHA457M": {
-                        "4.5": {
-                            7.0: {
+                        "0": {
+                            4.5: {
+                                7.0: {"name": "Formiravatel Mini (ST) STHA457M", "sku": "FORMIRAVAT-D45-L70-0", "unit": "шт", "qty": 14 },
                             },
                         },
                     },
                     "Formiravatel Mini (ST) STHA459M": {
-                        "4.5": {
-                            9.0: {
+                        "0": {
+                            4.5: {
+                                9.0: {"name": "Formiravatel Mini (ST) STHA459M", "sku": "FORMIRAVAT-D45-L90-0", "unit": "шт", "qty": 1 },
                             },
                         },
                     },
@@ -1817,11 +2289,12 @@ VISIBILITY = {
             "ARi": True,
             "AnyOne": True,
             "AnyRidge": True,
-            "BD NC": False,
-            "BD RC": False,
+            "BD NC": True,
+            "BD RC": True,
             "Mini": True,
             "ST": True,
             "STMini": True,
+            "тип": True,
         },
         "product": {
             "Angled  Abutment (MINI) MIAA3215HT": True,
@@ -1991,9 +2464,50 @@ VISIBILITY = {
             "Formiravatel RC AROHAR604": False,
             "Formiravatel RC AROHAR605": False,
             "Formiravatel RC AROHAR606": False,
+            "Multi-Unit (AO) MUAAOH1725TC": True,
+            "Multi-Unit (AO) MUAAOH1735TC": True,
+            "Multi-Unit (AO) MUAAOH1745TC": True,
+            "Multi-Unit (AO) MUAAOH3035TC": True,
+            "Multi-Unit (AO) MUAAOH3045TC": True,
+            "Multi-Unit (AO) MUAAON0015C": True,
+            "Multi-Unit (AO) MUAAON0025C": True,
+            "Multi-Unit (AO) MUAAON0035C": True,
+            "Multi-Unit (AO) MUAAON0045C": True,
+            "Multi-Unit (AO) MUAAON1725TC Non-Hex": True,
+            "Multi-Unit (AO) MUAAON1745TC non-hex": True,
+            "Multi-Unit (AR) MUAARH1725LC": True,
+            "Multi-Unit (AR) MUAARH1735LC": True,
+            "Multi-Unit (AR) MUAARH1745LC": True,
+            "Multi-Unit (AR) MUAARH3035LC": True,
+            "Multi-Unit (AR) MUAARH3045LC": True,
+            "Multi-Unit (AR) MUAARN0015C": True,
+            "Multi-Unit (AR) MUAARN0025C": True,
+            "Multi-Unit (AR) MUAARN0035C": True,
+            "Multi-Unit (AR) MUAARN0045C": True,
+            "Multi-Unit (AR) MUAARN1725LC Non-Hex": True,
+            "Multi-Unit (AR) MUAARN1735LC Non-Hex": True,
+            "Multi-Unit (AR) MUAARN3035LC Non-Hex": True,
+            "Multi-Unit (AR) MUAARN3045LC Non-Hex": True,
+            "Multi-unit (BD) NC MUAARONN0015C": True,
+            "Multi-unit (BD) NC MUAARONN0025C": True,
+            "Multi-unit (BD) NC MUAARONN0035C": True,
+            "Multi-unit (BD) NC MUAARONN0045C": True,
+            "Multi-unit (BD) NC MUAARONO1725TC": True,
+            "Multi-unit (BD) NC MUAARONO1735TC": True,
+            "Multi-unit (BD) NC MUAARONO1745TC": True,
+            "Multi-unit (BD) NC MUAARONO3035TC": True,
+            "Multi-unit (BD) NC MUAARONO3045TC": True,
+            "Multi-unit (BD) RC MUAARORN 0015C": True,
+            "Multi-unit (BD) RC MUAARORN 0025C": True,
+            "Multi-unit (BD) RC MUAARORN 0035C": True,
+            "Multi-unit (BD) RC MUAARORN 0045C": True,
+            "Multi-unit (BD) RC MUAARORO1725TC": True,
+            "Multi-unit (BD) RC MUAARORO1735TC": True,
+            "Multi-unit (BD) RC MUAARORO3035TC": True,
         },
         "subcategory": {
             "EzPost": True,
+            "MU": True,
             "Формик": False,
         },
     },

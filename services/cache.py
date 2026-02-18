@@ -1,145 +1,144 @@
 """
 Кеширование пользователей с использованием Redis для поддержки нескольких инстансов.
+
+Кешируется CachedUser (dataclass), а НЕ ORM-объект User, чтобы избежать
+DetachedInstanceError при обращении к relationship вне сессии.
 """
+from __future__ import annotations
+
+from dataclasses import dataclass
 from typing import Optional
 import json
 import logging
-from datetime import timedelta
-from database.models import User
+from datetime import datetime, timedelta
+
+from database.models import UserRole
 from config import config
 
 logger = logging.getLogger(__name__)
 
 
+@dataclass(frozen=True, slots=True)
+class CachedUser:
+    """Легковесный снимок пользователя для кеша (не ORM-объект)."""
+    id: int
+    telegram_id: int
+    full_name: str
+    role: UserRole
+    is_active: bool
+
+    def to_dict(self) -> dict:
+        return {
+            "id": self.id,
+            "telegram_id": self.telegram_id,
+            "full_name": self.full_name,
+            "role": self.role.value,
+            "is_active": self.is_active,
+        }
+
+    @classmethod
+    def from_dict(cls, d: dict) -> CachedUser:
+        return cls(
+            id=d["id"],
+            telegram_id=d["telegram_id"],
+            full_name=d["full_name"],
+            role=UserRole(d["role"]),
+            is_active=d["is_active"],
+        )
+
+    @classmethod
+    def from_orm(cls, user) -> CachedUser:
+        """Создать из SQLAlchemy User."""
+        return cls(
+            id=user.id,
+            telegram_id=user.telegram_id,
+            full_name=user.full_name,
+            role=user.role if isinstance(user.role, UserRole) else UserRole(user.role),
+            is_active=user.is_active,
+        )
+
+
 class RedisUserCache:
     """Кеш пользователей на Redis с TTL."""
-    
+
     def __init__(self, redis_client, ttl_seconds: int = 300):
-        """
-        Args:
-            redis_client: Клиент Redis (async)
-            ttl_seconds: TTL в секундах
-        """
         self.redis = redis_client
         self.ttl = ttl_seconds
         self._prefix = "user_cache:"
-    
+
     def _key(self, telegram_id: int) -> str:
-        """Генерация ключа для Redis."""
         return f"{self._prefix}{telegram_id}"
-    
-    async def get(self, telegram_id: int) -> Optional[User]:
-        """
-        Получить пользователя из кеша.
-        
-        Args:
-            telegram_id: Telegram ID пользователя
-            
-        Returns:
-            User или None если не найден
-        """
+
+    async def get(self, telegram_id: int) -> Optional[CachedUser]:
+        """Получить кешированного пользователя."""
         try:
             key = self._key(telegram_id)
             data = await self.redis.get(key)
             if data:
-                # Декодируем из JSON
-                user_data = json.loads(data)
-                # Создаем объект User из словаря
-                # Внимание: это упрощенная версия, в реальности нужно использовать SQLAlchemy
-                from database.models import UserRole
-                user = User(
-                    id=user_data["id"],
-                    telegram_id=user_data["telegram_id"],
-                    full_name=user_data["full_name"],
-                    role=UserRole(user_data["role"]),
-                    is_active=user_data["is_active"]
-                )
-                return user
+                return CachedUser.from_dict(json.loads(data))
         except Exception as e:
-            logger.debug(f"Cache get error for user {telegram_id}: {e}")
+            logger.debug("Cache get error for user %s: %s", telegram_id, e)
         return None
-    
-    async def set(self, telegram_id: int, user: User):
-        """
-        Сохранить пользователя в кеш.
-        
-        Args:
-            telegram_id: Telegram ID пользователя
-            user: Объект User
-        """
+
+    async def set(self, telegram_id: int, user) -> None:
+        """Сохранить пользователя в кеш (принимает ORM User или CachedUser)."""
         try:
             key = self._key(telegram_id)
-            # Сериализуем в JSON
-            user_data = {
-                "id": user.id,
-                "telegram_id": user.telegram_id,
-                "full_name": user.full_name,
-                "role": user.role.value if hasattr(user.role, "value") else str(user.role),
-                "is_active": user.is_active
-            }
-            data = json.dumps(user_data)
-            await self.redis.setex(key, self.ttl, data)
+            if isinstance(user, CachedUser):
+                cached = user
+            else:
+                cached = CachedUser.from_orm(user)
+            await self.redis.setex(key, self.ttl, json.dumps(cached.to_dict()))
         except Exception as e:
-            logger.warning(f"Cache set error for user {telegram_id}: {e}")
-    
-    async def invalidate(self, telegram_id: int):
-        """
-        Удалить пользователя из кеша.
-        
-        Args:
-            telegram_id: Telegram ID пользователя
-        """
+            logger.warning("Cache set error for user %s: %s", telegram_id, e)
+
+    async def invalidate(self, telegram_id: int) -> None:
         try:
-            key = self._key(telegram_id)
-            await self.redis.delete(key)
+            await self.redis.delete(self._key(telegram_id))
         except Exception as e:
-            logger.debug(f"Cache invalidate error for user {telegram_id}: {e}")
-    
-    async def clear(self):
-        """Очистить весь кеш пользователей."""
+            logger.debug("Cache invalidate error for user %s: %s", telegram_id, e)
+
+    async def clear(self) -> None:
         try:
             pattern = f"{self._prefix}*"
             keys = await self.redis.keys(pattern)
             if keys:
                 await self.redis.delete(*keys)
         except Exception as e:
-            logger.warning(f"Cache clear error: {e}")
+            logger.warning("Cache clear error: %s", e)
 
 
 class MemoryUserCache:
     """In-memory кеш пользователей (fallback если Redis недоступен)."""
-    
+
     def __init__(self, ttl_seconds: int = 300):
         import asyncio
-        from datetime import datetime, timedelta
-        self._cache: dict[int, tuple] = {}  # telegram_id -> (user, expiry)
+        self._cache: dict[int, tuple[CachedUser, datetime]] = {}
         self._ttl = timedelta(seconds=ttl_seconds)
         self._lock = asyncio.Lock()
-    
-    async def get(self, telegram_id: int) -> Optional[User]:
-        """Получить пользователя из кеша."""
-        from datetime import datetime
+
+    async def get(self, telegram_id: int) -> Optional[CachedUser]:
         async with self._lock:
             if telegram_id in self._cache:
-                user, expiry = self._cache[telegram_id]
+                cached, expiry = self._cache[telegram_id]
                 if datetime.now() < expiry:
-                    return user
+                    return cached
                 del self._cache[telegram_id]
         return None
-    
-    async def set(self, telegram_id: int, user: User):
-        """Сохранить пользователя в кеш."""
-        from datetime import datetime
+
+    async def set(self, telegram_id: int, user) -> None:
         async with self._lock:
-            self._cache[telegram_id] = (user, datetime.now() + self._ttl)
-    
-    async def invalidate(self, telegram_id: int):
-        """Удалить пользователя из кеша."""
+            if isinstance(user, CachedUser):
+                cached = user
+            else:
+                cached = CachedUser.from_orm(user)
+            self._cache[telegram_id] = (cached, datetime.now() + self._ttl)
+
+    async def invalidate(self, telegram_id: int) -> None:
         async with self._lock:
             self._cache.pop(telegram_id, None)
-    
-    async def clear(self):
-        """Очистить весь кеш."""
+
+    async def clear(self) -> None:
         async with self._lock:
             self._cache.clear()
 
@@ -149,15 +148,7 @@ user_cache: Optional[RedisUserCache | MemoryUserCache] = None
 
 
 async def init_cache(redis_client=None) -> RedisUserCache | MemoryUserCache:
-    """
-    Инициализировать кеш пользователей.
-    
-    Args:
-        redis_client: Клиент Redis (опционально)
-        
-    Returns:
-        Экземпляр кеша (Redis или Memory)
-    """
+    """Инициализировать кеш пользователей."""
     global user_cache
     if redis_client:
         try:
@@ -166,8 +157,8 @@ async def init_cache(redis_client=None) -> RedisUserCache | MemoryUserCache:
             logger.info("Using Redis cache for users")
             return user_cache
         except Exception as e:
-            logger.warning(f"Redis not available for cache, using memory: {e}")
-    
+            logger.warning("Redis not available for cache, using memory: %s", e)
+
     user_cache = MemoryUserCache(ttl_seconds=config.REDIS_CACHE_TTL)
     logger.info("Using memory cache for users")
     return user_cache

@@ -66,7 +66,7 @@ async def process_role_callback(callback: types.CallbackQuery, callback_data: Ro
         try:
             await callback.bot.send_message(user_telegram_id, "Ваша регистрация отклонена.")
         except Exception as e:
-            logger.error(f"Failed to notify user {user_telegram_id} about rejection: {e}", exc_info=True)
+            logger.error("Failed to notify user %s about rejection: %s", user_telegram_id, e, exc_info=True)
         return
 
     role_enum = UserRole(callback_data.role)

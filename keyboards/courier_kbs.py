@@ -120,8 +120,33 @@ def get_combined_delivery_kb(order_ids: list, clinics: list) -> InlineKeyboardMa
     return InlineKeyboardMarkup(inline_keyboard=rows)
 
 def get_courier_menu_kb() -> InlineKeyboardMarkup:
-    """Главное меню курьера"""
+    """Главное меню курьера: сначала выбор заказов, затем геолокация."""
     rows = [
-        [InlineKeyboardButton(text="🚀 Найти маршрут", callback_data="courier:find_route")],
+        [InlineKeyboardButton(text="📦 Выбрать заказы для доставки", callback_data="courier:select_orders")],
     ]
+    return InlineKeyboardMarkup(inline_keyboard=rows)
+
+
+def get_courier_select_orders_kb(orders: list, selected_ids: list) -> InlineKeyboardMarkup:
+    """Клавиатура выбора заказов: добавить/убрать из маршрута, затем построить маршрут."""
+    rows = []
+    for o in orders:
+        icon = "🔥" if getattr(o, "is_urgent", False) else "🟢"
+        name = getattr(o.clinic, "name", "—") if o.clinic else "—"
+        if o.id in selected_ids:
+            rows.append([InlineKeyboardButton(
+                text=f"✅ #{o.id} {name} (убрать)",
+                callback_data=f"courier:toggle_order:{o.id}"
+            )])
+        else:
+            rows.append([InlineKeyboardButton(
+                text=f"{icon} ➕ Заказ #{o.id} — {name}",
+                callback_data=f"courier:toggle_order:{o.id}"
+            )])
+    if selected_ids:
+        rows.append([InlineKeyboardButton(
+            text=f"📍 Построить маршрут ({len(selected_ids)} зак.)",
+            callback_data="courier:build_route"
+        )])
+    rows.append([InlineKeyboardButton(text="⬅ Назад", callback_data="courier:back")])
     return InlineKeyboardMarkup(inline_keyboard=rows)

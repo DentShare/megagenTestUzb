@@ -514,157 +514,82 @@
           "show_immediately": true
         }
       },
-      "4.5": {
+      "(4.5, 3.8)": {
         "7.0": {
-          "name": "AnyRidge 4507 C",
-          "sku": "ANYRIDGE4-D45-L70",
+          "name": "AnyRidge 384507 C",
+          "sku": "ANYRIDGE3-D45-L70",
           "unit": "шт",
-          "qty": 78,
-          "show_immediately": true
+          "qty": 14,
+          "show_immediately": true,
+          "diameter_body": 3.8
         },
         "11.0": {
-          "name": "AnyRidge 4511 C",
-          "sku": "ANYRIDGE4-D45-L110",
+          "name": "AnyRidge 384511 C",
+          "sku": "ANYRIDGE3-D45-L110",
           "unit": "шт",
-          "qty": 138,
-          "show_immediately": true
+          "qty": 10,
+          "show_immediately": true,
+          "diameter_body": 3.8
         },
         "13.0": {
-          "name": "AnyRidge 4513 C",
-          "sku": "ANYRIDGE4-D45-L130",
+          "name": "AnyRidge 384513 C",
+          "sku": "ANYRIDGE3-D45-L130",
           "unit": "шт",
-          "qty": 20,
-          "show_immediately": true
-        },
-        "8.0": {
-          "name": "AnyRidge 4508 C",
-          "sku": "ANYRIDGE4-D45-L80",
+          "qty": 5,
+          "show_immediately": true,
+          "diameter_body": 3.8
+        }
+      },
+      "(5.0, 3.8)": {
+        "7.0": {
+          "name": "AnyRidge 385007 C",
+          "sku": "ANYRIDGE3-D50-L70",
           "unit": "шт",
-          "qty": 7,
-          "show_immediately": true
+          "qty": 22,
+          "show_immediately": true,
+          "diameter_body": 3.8
         },
-        "15.0": {
-          "name": "AnyRidge 4515 C",
-          "sku": "ANYRIDGE4-D45-L150",
+        "10.0": {
+          "name": "AnyRidge 385010 C",
+          "sku": "ANYRIDGE3-D50-L100",
           "unit": "шт",
           "qty": 1,
-          "show_immediately": true
-        },
-        "18.0": {
-          "name": "AnyRidge 4518 C",
-          "sku": "ANYRIDGE4-D45-L180",
-          "unit": "шт",
-          "qty": 9,
-          "show_immediately": true
-        },
-        "25.0": {
-          "name": "AnyRidge 4525 C",
-          "sku": "ANYRIDGE4-D45-L250",
-          "unit": "шт",
-          "qty": 19,
-          "show_immediately": true
-        },
-        "5.0": {
-          "name": "AnyRidge MX 4505",
-          "sku": "ANYRIDGEM-D45-L50",
-          "unit": "шт",
-          "qty": 36,
-          "show_immediately": true
+          "show_immediately": true,
+          "diameter_body": 3.8
         }
       },
-      "5.0": {
+      "(5.5, 3.8)": {
         "7.0": {
-          "name": "AnyRidge 5007 C",
-          "sku": "ANYRIDGE5-D50-L70",
+          "name": "AnyRidge 385507 C",
+          "sku": "ANYRIDGE3-D55-L70",
           "unit": "шт",
-          "qty": 8,
-          "show_immediately": true
-        },
-        "10.0": {
-          "name": "AnyRidge 5010 C",
-          "sku": "ANYRIDGE5-D50-L100",
-          "unit": "шт",
-          "qty": 25,
-          "show_immediately": true
+          "qty": 5,
+          "show_immediately": true,
+          "diameter_body": 3.8
         },
         "8.0": {
-          "name": "AnyRidge 5008 C",
-          "sku": "ANYRIDGE5-D50-L80",
+          "name": "AnyRidge 385508 C",
+          "sku": "ANYRIDGE3-D55-L80",
           "unit": "шт",
-          "qty": 21,
-          "show_immediately": true
-        },
-        "11.0": {
-          "name": "AnyRidge 5011 C",
-          "sku": "ANYRIDGE5-D50-L110",
-          "unit": "шт",
-          "qty": 79,
-          "show_immediately": true
-        },
-        "13.0": {
-          "name": "AnyRidge 5013 C",
-          "sku": "ANYRIDGE5-D50-L130",
-          "unit": "шт",
-          "qty": 11,
-          "show_immediately": true
-        },
-        "15.0": {
-          "name": "AnyRidge 5015 C",
-          "sku": "ANYRIDGE5-D50-L150",
-          "unit": "шт",
-          "qty": 7,
-          "show_immediately": true
-        },
-        "5.0": {
-          "name": "AnyRidge MX 5005",
-          "sku": "ANYRIDGEM-D50-L50",
-          "unit": "шт",
-          "qty": 30,
-          "show_immediately": true
-        }
-      },
-      "5.5": {
-        "7.0": {
-          "name": "AnyRidge 5507 C",
-          "sku": "ANYRIDGE5-D55-L70",
-          "unit": "шт",
-          "qty": 16,
-          "show_immediately": true
-        },
-        "8.0": {
-          "name": "AnyRidge 5508 C",
-          "sku": "ANYRIDGE5-D55-L80",
-          "unit": "шт",
-          "qty": 3,
-          "show_immediately": true
+          "qty": 22,
+          "show_immediately": true,
+          "diameter_body": 3.8
         },
         "10.0": {
-          "name": "AnyRidge 5510 C",
-          "sku": "ANYRIDGE5-D55-L100",
-          "unit": "шт",
-          "qty": 12,
-          "show_immediately": true
-        },
-        "15.0": {
-          "name": "AnyRidge 5515 C",
-          "sku": "ANYRIDGE5-D55-L150",
-          "unit": "шт",
-          "qty": 7,
-          "show_immediately": true
-        },
-        "13.0": {
-          "name": "AnyRidge 5513 C",
-          "sku": "ANYRIDGE5-D55-L130",
+          "name": "AnyRidge 385510 C",
+          "sku": "ANYRIDGE3-D55-L100",
           "unit": "шт",
           "qty": 6,
-          "show_immediately": true
+          "show_immediately": true,
+          "diameter_body": 3.8
         },
-        "11.0": {
-          "name": "AnyRidge 5511 C",
-          "sku": "ANYRIDGE5-D55-L110",
+        "15.0": {
+          "name": "AnyRidge 385515 C",
+          "sku": "ANYRIDGE3-D55-L150",
           "unit": "шт",
-          "qty": 9,
-          "show_immediately": true
+          "qty": 5,
+          "show_immediately": true,
+          "diameter_body": 3.8
         }
       },
       "4.0": {
@@ -732,7 +657,83 @@
           "show_immediately": true
         }
       },
-      "6.0": {
+      "4.5": {
+        "7.0": {
+          "name": "AnyRidge 4507 C",
+          "sku": "ANYRIDGE4-D45-L70",
+          "unit": "шт",
+          "qty": 78,
+          "show_immediately": true
+        },
+        "8.0": {
+          "name": "AnyRidge 4508 C",
+          "sku": "ANYRIDGE4-D45-L80",
+          "unit": "шт",
+          "qty": 7,
+          "show_immediately": true
+        },
+        "11.0": {
+          "name": "AnyRidge 4511 C",
+          "sku": "ANYRIDGE4-D45-L110",
+          "unit": "шт",
+          "qty": 138,
+          "show_immediately": true
+        },
+        "13.0": {
+          "name": "AnyRidge 4513 C",
+          "sku": "ANYRIDGE4-D45-L130",
+          "unit": "шт",
+          "qty": 20,
+          "show_immediately": true
+        },
+        "15.0": {
+          "name": "AnyRidge 4515 C",
+          "sku": "ANYRIDGE4-D45-L150",
+          "unit": "шт",
+          "qty": 1,
+          "show_immediately": true
+        },
+        "18.0": {
+          "name": "AnyRidge 4518 C",
+          "sku": "ANYRIDGE4-D45-L180",
+          "unit": "шт",
+          "qty": 9,
+          "show_immediately": true
+        },
+        "25.0": {
+          "name": "AnyRidge 4525 C",
+          "sku": "ANYRIDGE4-D45-L250",
+          "unit": "шт",
+          "qty": 19,
+          "show_immediately": true
+        },
+        "5.0": {
+          "name": "AnyRidge MX 4505",
+          "sku": "ANYRIDGEM-D45-L50",
+          "unit": "шт",
+          "qty": 36,
+          "show_immediately": true
+        }
+      },
+      "(5.5, 4.8)": {
+        "13.0": {
+          "name": "AnyRidge 485513 C",
+          "sku": "ANYRIDGE4-D55-L130",
+          "unit": "шт",
+          "qty": 5,
+          "show_immediately": true,
+          "diameter_body": 4.8
+        },
+        "15.0": {
+          "name": "AnyRidge 485515 C",
+          "sku": "ANYRIDGE4-D55-L150",
+          "unit": "шт",
+          "qty": 5,
+          "show_immediately": true,
+          "diameter_body": 4.8
+        }
+      },
+      "(6.0, 4.8)": {
         "7.0": {
           "name": "AnyRidge 486007 C",
           "sku": "ANYRIDGE4-D60-L70",
@@ -741,6 +742,111 @@
           "show_immediately": true,
           "diameter_body": 4.8
         },
+        "8.0": {
+          "name": "AnyRidge 486008 C",
+          "sku": "ANYRIDGE4-D60-L80",
+          "unit": "шт",
+          "qty": 36,
+          "show_immediately": true,
+          "diameter_body": 4.8
+        }
+      },
+      "5.0": {
+        "7.0": {
+          "name": "AnyRidge 5007 C",
+          "sku": "ANYRIDGE5-D50-L70",
+          "unit": "шт",
+          "qty": 8,
+          "show_immediately": true
+        },
+        "8.0": {
+          "name": "AnyRidge 5008 C",
+          "sku": "ANYRIDGE5-D50-L80",
+          "unit": "шт",
+          "qty": 21,
+          "show_immediately": true
+        },
+        "10.0": {
+          "name": "AnyRidge 5010 C",
+          "sku": "ANYRIDGE5-D50-L100",
+          "unit": "шт",
+          "qty": 25,
+          "show_immediately": true
+        },
+        "11.0": {
+          "name": "AnyRidge 5011 C",
+          "sku": "ANYRIDGE5-D50-L110",
+          "unit": "шт",
+          "qty": 79,
+          "show_immediately": true
+        },
+        "13.0": {
+          "name": "AnyRidge 5013 C",
+          "sku": "ANYRIDGE5-D50-L130",
+          "unit": "шт",
+          "qty": 11,
+          "show_immediately": true
+        },
+        "15.0": {
+          "name": "AnyRidge 5015 C",
+          "sku": "ANYRIDGE5-D50-L150",
+          "unit": "шт",
+          "qty": 7,
+          "show_immediately": true
+        },
+        "5.0": {
+          "name": "AnyRidge MX 5005",
+          "sku": "ANYRIDGEM-D50-L50",
+          "unit": "шт",
+          "qty": 30,
+          "show_immediately": true
+        }
+      },
+      "5.5": {
+        "7.0": {
+          "name": "AnyRidge 5507 C",
+          "sku": "ANYRIDGE5-D55-L70",
+          "unit": "шт",
+          "qty": 16,
+          "show_immediately": true
+        },
+        "8.0": {
+          "name": "AnyRidge 5508 C",
+          "sku": "ANYRIDGE5-D55-L80",
+          "unit": "шт",
+          "qty": 3,
+          "show_immediately": true
+        },
+        "10.0": {
+          "name": "AnyRidge 5510 C",
+          "sku": "ANYRIDGE5-D55-L100",
+          "unit": "шт",
+          "qty": 12,
+          "show_immediately": true
+        },
+        "11.0": {
+          "name": "AnyRidge 5511 C",
+          "sku": "ANYRIDGE5-D55-L110",
+          "unit": "шт",
+          "qty": 9,
+          "show_immediately": true
+        },
+        "13.0": {
+          "name": "AnyRidge 5513 C",
+          "sku": "ANYRIDGE5-D55-L130",
+          "unit": "шт",
+          "qty": 6,
+          "show_immediately": true
+        },
+        "15.0": {
+          "name": "AnyRidge 5515 C",
+          "sku": "ANYRIDGE5-D55-L150",
+          "unit": "шт",
+          "qty": 7,
+          "show_immediately": true
+        }
+      },
+      "6.0": {
         "8.0": {
           "name": "AnyRidge 6008 C",
           "sku": "ANYRIDGE6-D60-L80",
@@ -913,7 +1019,7 @@
       }
     },
     "ARi": {
-      "3.5": {
+      "(3.5, 2.8)": {
         "5.0": {
           "name": "ARIE 283558M",
           "sku": "ARIE28355-D35-L50-H80",
@@ -931,7 +1037,25 @@
           "diameter_body": 2.8
         }
       },
-      "4.0": {
+      "(4.0, 2.8)": {
+        "5.0": {
+          "name": "ARIE 284050M",
+          "sku": "ARIE28405-D40-L50-H40",
+          "unit": "шт",
+          "qty": 3,
+          "show_immediately": false,
+          "diameter_body": 2.8
+        },
+        "7.0": {
+          "name": "ARIE 284076M",
+          "sku": "ARIE28407-D40-L70-H60",
+          "unit": "шт",
+          "qty": 6,
+          "show_immediately": false,
+          "diameter_body": 2.8
+        }
+      },
+      "(4.0, 3.2)": {
         "5.0": {
           "name": "ARIE 324058M",
           "sku": "ARIE32405-D40-L50-H80",
@@ -957,7 +1081,7 @@
           "diameter_body": 3.2
         }
       },
-      "4.5": {
+      "(4.5, 3.2)": {
         "5.0": {
           "name": "ARIE 324558M",
           "sku": "ARIE32455-D45-L50-H80",
@@ -2967,6 +3091,408 @@
         "Formiravatel RC AROHAR606": {
           "6.0": {
             "6.0": {}
+          }
+        }
+      }
+    },
+    "MU": {
+      "AnyOne": {
+        "Multi-Unit (AO) MUAAOH1725TC": {
+          "17": {
+            "4.8": {
+              "2.5": {
+                "name": "Multi-Unit (AO) MUAAOH1725TC",
+                "sku": "MULTI-UNIT-D48-L25-17",
+                "unit": "шт",
+                "qty": 40,
+                "show_immediately": true
+              }
+            }
+          }
+        },
+        "Multi-Unit (AO) MUAAOH1735TC": {
+          "17": {
+            "4.8": {
+              "3.5": {
+                "name": "Multi-Unit (AO) MUAAOH1735TC",
+                "sku": "MULTI-UNIT-D48-L35-17",
+                "unit": "шт",
+                "qty": 60,
+                "show_immediately": true
+              }
+            }
+          }
+        },
+        "Multi-Unit (AO) MUAAOH1745TC": {
+          "17": {
+            "4.8": {
+              "4.5": {
+                "name": "Multi-Unit (AO) MUAAOH1745TC",
+                "sku": "MULTI-UNIT-D48-L45-17",
+                "unit": "шт",
+                "qty": 10,
+                "show_immediately": true
+              }
+            }
+          }
+        },
+        "Multi-Unit (AO) MUAAOH3035TC": {
+          "30": {
+            "4.8": {
+              "3.5": {
+                "name": "Multi-Unit (AO) MUAAOH3035TC",
+                "sku": "MULTI-UNIT-D48-L35-30",
+                "unit": "шт",
+                "qty": 26,
+                "show_immediately": true
+              }
+            }
+          }
+        },
+        "Multi-Unit (AO) MUAAOH3045TC": {
+          "30": {
+            "4.8": {
+              "4.5": {
+                "name": "Multi-Unit (AO) MUAAOH3045TC",
+                "sku": "MULTI-UNIT-D48-L45-30",
+                "unit": "шт",
+                "qty": 19,
+                "show_immediately": true
+              }
+            }
+          }
+        },
+        "Multi-Unit (AO) MUAAON0015C": {
+          "4.8": {
+            "1.5": {}
+          }
+        },
+        "Multi-Unit (AO) MUAAON0025C": {
+          "4.8": {
+            "2.5": {}
+          }
+        },
+        "Multi-Unit (AO) MUAAON0035C": {
+          "4.8": {
+            "3.5": {}
+          }
+        },
+        "Multi-Unit (AO) MUAAON0045C": {
+          "4.8": {
+            "4.5": {}
+          }
+        },
+        "Multi-Unit (AO) MUAAON1725TC Non-Hex": {
+          "17": {
+            "4.8": {
+              "2.5": {
+                "name": "Multi-Unit (AO) MUAAON1725TC Non-Hex",
+                "sku": "MULTI-UNIT-D48-L25-17",
+                "unit": "шт",
+                "qty": 74,
+                "show_immediately": true
+              }
+            }
+          }
+        },
+        "Multi-Unit (AO) MUAAON1745TC non-hex": {
+          "17": {
+            "4.8": {
+              "4.5": {
+                "name": "Multi-Unit (AO) MUAAON1745TC non-hex",
+                "sku": "MULTI-UNIT-D48-L45-17",
+                "unit": "шт",
+                "qty": 39,
+                "show_immediately": true
+              }
+            }
+          }
+        }
+      },
+      "AnyRidge": {
+        "Multi-Unit (AR) MUAARH1725LC": {
+          "17": {
+            "4.8": {
+              "2.5": {
+                "name": "Multi-Unit (AR) MUAARH1725LC",
+                "sku": "MULTI-UNIT-D48-L25-17",
+                "unit": "шт",
+                "qty": 13,
+                "show_immediately": true
+              }
+            }
+          }
+        },
+        "Multi-Unit (AR) MUAARH1735LC": {
+          "17": {
+            "4.8": {
+              "3.5": {
+                "name": "Multi-Unit (AR) MUAARH1735LC",
+                "sku": "MULTI-UNIT-D48-L35-17",
+                "unit": "шт",
+                "qty": 34,
+                "show_immediately": true
+              }
+            }
+          }
+        },
+        "Multi-Unit (AR) MUAARH1745LC": {
+          "17": {
+            "4.8": {
+              "4.5": {
+                "name": "Multi-Unit (AR) MUAARH1745LC",
+                "sku": "MULTI-UNIT-D48-L45-17",
+                "unit": "шт",
+                "qty": 23,
+                "show_immediately": true
+              }
+            }
+          }
+        },
+        "Multi-Unit (AR) MUAARH3035LC": {
+          "30": {
+            "4.8": {
+              "3.5": {
+                "name": "Multi-Unit (AR) MUAARH3035LC",
+                "sku": "MULTI-UNIT-D48-L35-30",
+                "unit": "шт",
+                "qty": 10,
+                "show_immediately": true
+              }
+            }
+          }
+        },
+        "Multi-Unit (AR) MUAARH3045LC": {
+          "30": {
+            "4.8": {
+              "4.5": {
+                "name": "Multi-Unit (AR) MUAARH3045LC",
+                "sku": "MULTI-UNIT-D48-L45-30",
+                "unit": "шт",
+                "qty": 9,
+                "show_immediately": true
+              }
+            }
+          }
+        },
+        "Multi-Unit (AR) MUAARN0015C": {
+          "4.8": {
+            "1.5": {}
+          }
+        },
+        "Multi-Unit (AR) MUAARN0025C": {
+          "4.8": {
+            "2.5": {}
+          }
+        },
+        "Multi-Unit (AR) MUAARN0035C": {
+          "4.8": {
+            "3.5": {}
+          }
+        },
+        "Multi-Unit (AR) MUAARN0045C": {
+          "4.8": {
+            "4.5": {}
+          }
+        },
+        "Multi-Unit (AR) MUAARN1725LC Non-Hex": {
+          "17": {
+            "4.8": {
+              "2.5": {
+                "name": "Multi-Unit (AR) MUAARN1725LC Non-Hex",
+                "sku": "MULTI-UNIT-D48-L25-17",
+                "unit": "шт",
+                "qty": 5,
+                "show_immediately": true
+              }
+            }
+          }
+        },
+        "Multi-Unit (AR) MUAARN1735LC Non-Hex": {
+          "17": {
+            "4.8": {
+              "3.5": {
+                "name": "Multi-Unit (AR) MUAARN1735LC Non-Hex",
+                "sku": "MULTI-UNIT-D48-L35-17",
+                "unit": "шт",
+                "qty": 14,
+                "show_immediately": true
+              }
+            }
+          }
+        },
+        "Multi-Unit (AR) MUAARN3035LC Non-Hex": {
+          "30": {
+            "4.8": {
+              "3.5": {
+                "name": "Multi-Unit (AR) MUAARN3035LC Non-Hex",
+                "sku": "MULTI-UNIT-D48-L35-30",
+                "unit": "шт",
+                "qty": 14,
+                "show_immediately": true
+              }
+            }
+          }
+        },
+        "Multi-Unit (AR) MUAARN3045LC Non-Hex": {
+          "30": {
+            "4.8": {
+              "4.5": {
+                "name": "Multi-Unit (AR) MUAARN3045LC Non-Hex",
+                "sku": "MULTI-UNIT-D48-L45-30",
+                "unit": "шт",
+                "qty": 1,
+                "show_immediately": true
+              }
+            }
+          }
+        }
+      },
+      "BD NC": {
+        "Multi-unit (BD) NC MUAARONN0015C": {
+          "4.8": {
+            "1.5": {}
+          }
+        },
+        "Multi-unit (BD) NC MUAARONN0025C": {
+          "4.8": {
+            "2.5": {}
+          }
+        },
+        "Multi-unit (BD) NC MUAARONN0035C": {
+          "4.8": {
+            "3.5": {}
+          }
+        },
+        "Multi-unit (BD) NC MUAARONN0045C": {
+          "4.8": {
+            "4.5": {}
+          }
+        },
+        "Multi-unit (BD) NC MUAARONO1725TC": {
+          "17": {
+            "4.8": {
+              "2.5": {
+                "name": "Multi-unit (BD) NC MUAARONO1725TC",
+                "sku": "MULTI-UNIT-D48-L25-17",
+                "unit": "шт",
+                "qty": 7,
+                "show_immediately": true
+              }
+            }
+          }
+        },
+        "Multi-unit (BD) NC MUAARONO1735TC": {
+          "17": {
+            "4.8": {
+              "3.5": {
+                "name": "Multi-unit (BD) NC MUAARONO1735TC",
+                "sku": "MULTI-UNIT-D48-L35-17",
+                "unit": "шт",
+                "qty": 7,
+                "show_immediately": true
+              }
+            }
+          }
+        },
+        "Multi-unit (BD) NC MUAARONO1745TC": {
+          "17": {
+            "4.8": {
+              "4.5": {
+                "name": "Multi-unit (BD) NC MUAARONO1745TC",
+                "sku": "MULTI-UNIT-D48-L45-17",
+                "unit": "шт",
+                "qty": 14,
+                "show_immediately": true
+              }
+            }
+          }
+        },
+        "Multi-unit (BD) NC MUAARONO3035TC": {
+          "30": {
+            "4.8": {
+              "3.5": {
+                "name": "Multi-unit (BD) NC MUAARONO3035TC",
+                "sku": "MULTI-UNIT-D48-L35-30",
+                "unit": "шт",
+                "qty": 21,
+                "show_immediately": true
+              }
+            }
+          }
+        },
+        "Multi-unit (BD) NC MUAARONO3045TC": {
+          "30": {
+            "4.8": {
+              "4.5": {
+                "name": "Multi-unit (BD) NC MUAARONO3045TC",
+                "sku": "MULTI-UNIT-D48-L45-30",
+                "unit": "шт",
+                "qty": 7,
+                "show_immediately": true
+              }
+            }
+          }
+        }
+      },
+      "BD RC": {
+        "Multi-unit (BD) RC MUAARORN 0015C": {
+          "4.8": {
+            "1.5": {}
+          }
+        },
+        "Multi-unit (BD) RC MUAARORN 0025C": {
+          "4.8": {
+            "2.5": {}
+          }
+        },
+        "Multi-unit (BD) RC MUAARORN 0035C": {
+          "4.8": {
+            "3.5": {}
+          }
+        },
+        "Multi-unit (BD) RC MUAARORN 0045C": {
+          "4.8": {
+            "4.5": {}
+          }
+        },
+        "Multi-unit (BD) RC MUAARORO1725TC": {
+          "17": {
+            "4.8": {
+              "2.5": {
+                "name": "Multi-unit (BD) RC MUAARORO1725TC",
+                "sku": "MULTI-UNIT-D48-L25-17",
+                "unit": "шт",
+                "qty": 10,
+                "show_immediately": true
+              }
+            }
+          }
+        },
+        "Multi-unit (BD) RC MUAARORO1735TC": {
+          "17": {
+            "4.8": {
+              "3.5": {
+                "name": "Multi-unit (BD) RC MUAARORO1735TC",
+                "sku": "MULTI-UNIT-D48-L35-17",
+                "unit": "шт",
+                "qty": 13,
+                "show_immediately": true
+              }
+            }
+          }
+        },
+        "Multi-unit (BD) RC MUAARORO3035TC": {
+          "30": {
+            "4.8": {
+              "3.5": {
+                "name": "Multi-unit (BD) RC MUAARORO3035TC",
+                "sku": "MULTI-UNIT-D48-L35-30",
+                "unit": "шт",
+                "qty": 13,
+                "show_immediately": true
+              }
+            }
           }
         }
       }

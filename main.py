@@ -118,13 +118,13 @@ async def wait_for_db() -> None:
                 logger.error("=" * 60)
                 logger.error("❌ ОШИБКА ПОДКЛЮЧЕНИЯ К БАЗЕ ДАННЫХ")
                 logger.error("=" * 60)
-                logger.error(f"Ошибка: {e}", exc_info=True)
+                logger.error("Ошибка: %s", e, exc_info=True)
                 logger.error("")
                 logger.error("Текущие настройки подключения:")
-                logger.error(f"  - DB_HOST: {config.DB_HOST}")
-                logger.error(f"  - DB_PORT: {config.DB_PORT}")
-                logger.error(f"  - DB_NAME: {config.DB_NAME}")
-                logger.error(f"  - DB_USER: {config.DB_USER}")
+                logger.error("  - DB_HOST: %s", config.DB_HOST)
+                logger.error("  - DB_PORT: %s", config.DB_PORT)
+                logger.error("  - DB_NAME: %s", config.DB_NAME)
+                logger.error("  - DB_USER: %s", config.DB_USER)
                 logger.error("")
                 logger.error("Возможные решения:")
                 logger.error("1. Убедитесь, что PostgreSQL сервер запущен")
@@ -182,14 +182,14 @@ async def main():
             from services.catalog_loader import load_catalog_automatically
             excel_file = config.CATALOG_EXCEL_FILE if config.CATALOG_EXCEL_FILE else None
             if excel_file:
-                logger.info(f"Using specified catalog file: {excel_file}")
+                logger.info("Using specified catalog file: %s", excel_file)
             result = load_catalog_automatically(excel_file)
             if result:
                 logger.info("✅ Catalog auto-sync completed successfully")
             else:
                 logger.warning("⚠️ Catalog auto-sync failed or skipped. Using existing catalog_data.py")
         except Exception as e:
-            logger.warning(f"Failed to auto-sync catalog: {e}. Using existing catalog_data.py", exc_info=True)
+            logger.warning("Failed to auto-sync catalog: %s. Using existing catalog_data.py", e, exc_info=True)
     else:
         logger.info("📦 Catalog auto-sync is disabled (CATALOG_AUTO_SYNC=false). Using existing catalog_data.py")
     
@@ -230,7 +230,7 @@ async def main():
         storage = RedisStorage(redis=redis_client)
         logger.info("Using Redis storage for FSM")
     except Exception as e:
-        logger.warning(f"Redis not available, using MemoryStorage: {e}")
+        logger.warning("Redis not available, using MemoryStorage: %s", e)
         from aiogram.fsm.storage.memory import MemoryStorage
         storage = MemoryStorage()
         redis_client = None
@@ -301,24 +301,36 @@ async def main():
     from handlers import fallback
     dp.include_router(fallback.router)
     
+    # Graceful shutdown: при SIGTERM (Railway, Docker) корректно останавливаем polling
+    import signal
+    stop_event = asyncio.Event()
+
+    def _signal_handler(sig, frame):
+        logger.info("Received signal %s, shutting down gracefully...", sig)
+        stop_event.set()
+
+    # На Windows SIGTERM не всегда доступен, но пробуем
+    for sig in (signal.SIGINT, signal.SIGTERM):
+        try:
+            signal.signal(sig, _signal_handler)
+        except (OSError, ValueError):
+            pass
+
     try:
-        # Удаляем webhook и ждем немного для избежания конфликтов
         # Удаляем webhook и ждем немного для избежания конфликтов
         try:
             await bot.delete_webhook(drop_pending_updates=True)
             logger.info("Webhook deleted successfully")
-            await asyncio.sleep(2)  # Задержка для завершения удаления webhook
+            await asyncio.sleep(2)
         except Exception as webhook_error:
-            logger.warning(f"Error deleting webhook (may not exist): {webhook_error}")
-            # Продолжаем работу даже если webhook не был установлен
-        
+            logger.warning("Error deleting webhook (may not exist): %s", webhook_error)
+
         logger.info("Bot started successfully")
 
         # Автоперезапуск polling при временных сетевых сбоях
         restart_delay = float(os.getenv("POLL_RESTART_SECONDS", "5"))
-        while True:
+        while not stop_event.is_set():
             try:
-                # Указываем allowed_updates для оптимизации и drop_pending_updates для очистки
                 await dp.start_polling(
                     bot,
                     allowed_updates=["message", "callback_query"],
@@ -326,7 +338,6 @@ async def main():
                 )
                 break  # нормальная остановка polling
             except TelegramRetryAfter as e:
-                # Telegram просит подождать (rate limit)
                 wait_s = float(getattr(e, "retry_after", restart_delay))
                 logger.warning("TelegramRetryAfter: wait %.1fs then continue", wait_s, exc_info=True)
                 await asyncio.sleep(wait_s)
@@ -334,19 +345,22 @@ async def main():
                 logger.error("Polling crashed (network/server). Restart in %.1fs", restart_delay, exc_info=True)
                 await asyncio.sleep(restart_delay)
             except Exception:
-                # Неожиданная ошибка — лучше не зацикливаться бесконечно
                 raise
     except Exception as e:
-        logger.error(f"Error starting bot: {e}", exc_info=True)
+        logger.error("Error starting bot: %s", e, exc_info=True)
         raise
     finally:
+        logger.info("Closing connections...")
         await bot.session.close()
-        if 'redis_client' in locals():
-            # redis>=5 рекомендует aclose()
+        if redis_client is not None:
             try:
                 await redis_client.aclose()
             except Exception:
-                await redis_client.close()
+                try:
+                    await redis_client.close()
+                except Exception:
+                    pass
+        logger.info("Bot stopped.")
 
 if __name__ == "__main__":
     try:
@@ -354,5 +368,5 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         logger.info("Bot stopped by user")
     except Exception as e:
-        logger.error(f"Fatal error: {e}", exc_info=True)
+        logger.error("Fatal error: %s", e, exc_info=True)
         sys.exit(1)

@@ -61,13 +61,13 @@ class RoleRequiredMiddleware(BaseMiddleware):
         user = await get_user_by_telegram_id(session, user_id, use_cache=True)
         
         if not user:
-            logger.warning(f"User {user_id} not found in database")
+            logger.warning("User %s not found in database", user_id)
             if isinstance(event, CallbackQuery):
                 await event.answer("❌ Пользователь не найден в системе.", show_alert=True)
             return
         
         if not user.is_active:
-            logger.warning(f"User {user_id} is not active")
+            logger.warning("User %s is not active", user_id)
             if isinstance(event, CallbackQuery):
                 await event.answer("❌ Ваш аккаунт не активирован.", show_alert=True)
             elif isinstance(event, Message):
@@ -76,7 +76,7 @@ class RoleRequiredMiddleware(BaseMiddleware):
         
         # Check role if required
         if self.required_role and user.role != self.required_role:
-            logger.warning(f"User {user_id} (role: {user.role}) attempted to access {self.required_role} resource")
+            logger.warning("User %s (role: %s) attempted to access %s resource", user_id, user.role, self.required_role)
             if isinstance(event, CallbackQuery):
                 await event.answer(f"❌ Доступ запрещен. Требуется роль: {self.required_role.value}", show_alert=True)
             elif isinstance(event, Message):

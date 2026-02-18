@@ -69,7 +69,7 @@ class RedisRateLimitMiddleware(BaseMiddleware):
         
             return await handler(event, data)
         except Exception as e:
-            logger.warning(f"Rate limit error for user {user_id}: {e}")
+            logger.warning("Rate limit error for user %s: %s", user_id, e)
             # При ошибке Redis пропускаем запрос
             return await handler(event, data)
 
@@ -140,6 +140,6 @@ async def create_rate_limit_middleware(
             await redis_client.ping()
             return RedisRateLimitMiddleware(redis_client, max_calls, period)
         except Exception as e:
-            logger.warning(f"Redis not available for rate limiting, using memory: {e}")
+            logger.warning("Redis not available for rate limiting, using memory: %s", e)
     
     return MemoryRateLimitMiddleware(max_calls, period)

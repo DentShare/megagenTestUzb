@@ -3,11 +3,11 @@
 """
 import logging
 from typing import List, Dict, Any, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from database.models import Order, OrderItem, OrderStatus, DeliveryType, User, Clinic
-from services.catalog_stock import get_qty, subtract
+from services.catalog_stock import get_qty, subtract, _stock_lock
 from config import config
 
 logger = logging.getLogger(__name__)
@@ -48,7 +48,7 @@ class OrderService:
             
             return True, None
         except Exception as e:
-            logger.error(f"Stock validation error: {e}", exc_info=True)
+            logger.error("Stock validation error: %s", e, exc_info=True)
             return False, f"Ошибка проверки остатков: {e}"
     
     @staticmethod
@@ -75,51 +75,56 @@ class OrderService:
             (order, error_message)
         """
         try:
-            # Проверяем остатки перед созданием заказа
-            is_valid, error = await OrderService.validate_stock(session, cart)
-            if not is_valid:
-                return None, error
-            
-            # Сессия из middleware уже в транзакции — не вызываем session.begin()
-            new_order = Order(
-                manager_id=manager_id,
-                clinic_id=clinic_id,
-                status=OrderStatus.NEW,
-                is_urgent=is_urgent,
-                delivery_type=delivery_type
-            )
-            session.add(new_order)
-            await session.flush()  # Получаем ID заказа
-            
-            # Добавляем товары
-            for item in cart:
-                order_item = OrderItem(
-                    order_id=new_order.id,
-                    item_sku=item['sku'],
-                    item_name=item['name'],
-                    quantity=item['quantity']
+            # Блокировка гарантирует атомарность проверки и вычитания остатков:
+            # без неё два параллельных заказа могут оба пройти validate_stock,
+            # а затем оба вычесть — остатки уйдут в минус.
+            async with _stock_lock:
+                # Проверяем остатки перед созданием заказа
+                is_valid, error = await OrderService.validate_stock(session, cart)
+                if not is_valid:
+                    return None, error
+
+                # Сессия из middleware уже в транзакции — не вызываем session.begin()
+                new_order = Order(
+                    manager_id=manager_id,
+                    clinic_id=clinic_id,
+                    status=OrderStatus.NEW,
+                    is_urgent=is_urgent,
+                    delivery_type=delivery_type
                 )
-                session.add(order_item)
-            
-            # Вычитаем остатки
-            if getattr(config, "USE_CATALOG_STOCK", False):
+                session.add(new_order)
+                await session.flush()  # Получаем ID заказа
+
+                # Добавляем товары
                 for item in cart:
-                    if not subtract(item["sku"], item["quantity"]):
-                        logger.warning(
-                            f"Failed to subtract stock for sku={item['sku']}, qty={item['quantity']}"
-                        )
-            
-            await session.commit()
-            await session.refresh(new_order)
-            
+                    order_item = OrderItem(
+                        order_id=new_order.id,
+                        item_sku=item['sku'],
+                        item_name=item['name'],
+                        quantity=item['quantity']
+                    )
+                    session.add(order_item)
+
+                # Вычитаем остатки
+                if getattr(config, "USE_CATALOG_STOCK", False):
+                    for item in cart:
+                        if not subtract(item["sku"], item["quantity"]):
+                            logger.warning(
+                                "Failed to subtract stock for sku=%s, qty=%s",
+                                item['sku'], item['quantity']
+                            )
+
+                await session.commit()
+                await session.refresh(new_order)
+
             logger.info(
-                f"Order created: id={new_order.id}, manager={manager_id}, "
-                f"clinic={clinic_id}, items={len(cart)}"
+                "Order created: id=%s, manager=%s, clinic=%s, items=%s",
+                new_order.id, manager_id, clinic_id, len(cart)
             )
             return new_order, None
-                
+
         except Exception as e:
-            logger.error(f"Error creating order: {e}", exc_info=True)
+            logger.error("Error creating order: %s", e, exc_info=True)
             await session.rollback()
             return None, f"Ошибка создания заказа: {e}"
     
@@ -181,20 +186,21 @@ class OrderService:
             
             # Обновляем временные метки
             if status == OrderStatus.ASSEMBLY:
-                order.assembled_at = datetime.utcnow()
+                order.assembled_at = datetime.now(timezone.utc)
             elif status == OrderStatus.DELIVERED:
-                order.delivered_at = datetime.utcnow()
+                order.delivered_at = datetime.now(timezone.utc)
             
             await session.commit()
             await session.refresh(order)
             
             logger.info(
-                f"Order status updated: id={order_id}, {old_status} -> {status}, user={user_id}"
+                "Order status updated: id=%s, %s -> %s, user=%s",
+                order_id, old_status, status, user_id
             )
             return True, None
             
         except Exception as e:
-            logger.error(f"Error updating order status: {e}", exc_info=True)
+            logger.error("Error updating order status: %s", e, exc_info=True)
             await session.rollback()
             return False, f"Ошибка обновления статуса: {e}"
 

@@ -1,5 +1,5 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from database.models import Order, OrderStatus
+from database.models import Order, OrderStatus, OrderItem
 
 def get_warehouse_orders_list_kb(orders: list) -> InlineKeyboardMarkup:
     """Список активных заказов в виде кнопок. При нажатии — детали заказа."""
@@ -18,13 +18,23 @@ def get_warehouse_orders_list_kb(orders: list) -> InlineKeyboardMarkup:
         rows.append(row)
     return InlineKeyboardMarkup(inline_keyboard=rows)
 
-def get_warehouse_order_detail_kb(order_id: int, status: str) -> InlineKeyboardMarkup:
+def get_warehouse_order_detail_kb(order_id: int, status: str, items: list = None) -> InlineKeyboardMarkup:
     """
     Кнопки для детального просмотра заказа.
     NEW -> "Взять в работу"
     ASSEMBLY -> "Собрано"
+    Для каждого товара: «Нет в наличии» (если ещё не запрошена замена и не подобрана).
     """
     rows = []
+    items = items or []
+    for item in items:
+        if getattr(item, "need_replacement", False):
+            continue  # Уже отмечено «нет в наличии» — кнопку не показываем (менеджер подберёт замену)
+        name_short = (item.item_name or "")[:32]
+        rows.append([InlineKeyboardButton(
+            text=f"❌ Нет в наличии: {name_short}",
+            callback_data=f"wh_item_out:{order_id}:{item.id}"
+        )])
     if status == "new":
         rows.append([InlineKeyboardButton(text="🛠 Взять в работу", callback_data=f"wh_take:{order_id}")])
     elif status == "assembly":

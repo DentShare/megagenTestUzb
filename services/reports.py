@@ -126,11 +126,11 @@ async def export_to_sheets(data: list[list], sheet_name: str = "Заказы"):
                 # For now, we'll just return the URL - admin can share manually
                 sheet_url = f"https://docs.google.com/spreadsheets/d/{spreadsheet_id}"
                 
-                logger.info(f"Successfully created Google Sheet: {sheet_url}")
+                logger.info("Successfully created Google Sheet: %s", sheet_url)
                 return sheet_url
                 
         except Exception as e:
-            logger.error(f"Failed to export to Google Sheets: {e}")
+            logger.error("Failed to export to Google Sheets: %s", e)
             logger.info("Falling back to XLSX export")
     
     # Fallback: XLSX — корректные столбцы и строки, удобная фильтрация в Excel
