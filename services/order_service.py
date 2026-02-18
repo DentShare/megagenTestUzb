@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from database.models import Order, OrderItem, OrderStatus, DeliveryType, User, Clinic
-from services.catalog_stock import get_qty, subtract, _stock_lock
+from services.catalog_db import get_qty as db_get_qty, subtract_qty as db_subtract
 from config import config
 
 logger = logging.getLogger(__name__)
@@ -22,30 +22,26 @@ class OrderService:
         cart: List[Dict[str, Any]]
     ) -> tuple[bool, Optional[str]]:
         """
-        Проверить наличие товаров на складе.
-        
-        Args:
-            session: Сессия БД
-            cart: Список товаров в корзине
-            
+        Проверить наличие товаров на складе (через catalog_items в БД).
+
         Returns:
             (is_valid, error_message)
         """
         if not getattr(config, "USE_CATALOG_STOCK", False):
             return True, None
-        
+
         try:
             from collections import defaultdict
-            by_sku = defaultdict(int)
+            by_sku: Dict[str, int] = defaultdict(int)
             for item in cart:
                 by_sku[item["sku"]] += item["quantity"]
-            
+
             for sku, need in by_sku.items():
-                available = get_qty(sku)
+                available = await db_get_qty(session, sku)
                 if available < need:
                     name = next((i["name"] for i in cart if i["sku"] == sku), sku)
                     return False, f"Недостаточно на складе: {name}. Доступно: {available} шт."
-            
+
             return True, None
         except Exception as e:
             logger.error("Stock validation error: %s", e, exc_info=True)
@@ -75,47 +71,43 @@ class OrderService:
             (order, error_message)
         """
         try:
-            # Блокировка гарантирует атомарность проверки и вычитания остатков:
-            # без неё два параллельных заказа могут оба пройти validate_stock,
-            # а затем оба вычесть — остатки уйдут в минус.
-            async with _stock_lock:
-                # Проверяем остатки перед созданием заказа
-                is_valid, error = await OrderService.validate_stock(session, cart)
-                if not is_valid:
-                    return None, error
+            # Проверяем остатки перед созданием заказа
+            is_valid, error = await OrderService.validate_stock(session, cart)
+            if not is_valid:
+                return None, error
 
-                # Сессия из middleware уже в транзакции — не вызываем session.begin()
-                new_order = Order(
-                    manager_id=manager_id,
-                    clinic_id=clinic_id,
-                    status=OrderStatus.NEW,
-                    is_urgent=is_urgent,
-                    delivery_type=delivery_type
+            new_order = Order(
+                manager_id=manager_id,
+                clinic_id=clinic_id,
+                status=OrderStatus.NEW,
+                is_urgent=is_urgent,
+                delivery_type=delivery_type
+            )
+            session.add(new_order)
+            await session.flush()
+
+            for item in cart:
+                order_item = OrderItem(
+                    order_id=new_order.id,
+                    item_sku=item['sku'],
+                    item_name=item['name'],
+                    quantity=item['quantity']
                 )
-                session.add(new_order)
-                await session.flush()  # Получаем ID заказа
+                session.add(order_item)
 
-                # Добавляем товары
+            # Атомарное вычитание остатков через UPDATE ... WHERE qty >= n
+            # (race condition невозможен — БД гарантирует атомарность)
+            if getattr(config, "USE_CATALOG_STOCK", False):
                 for item in cart:
-                    order_item = OrderItem(
-                        order_id=new_order.id,
-                        item_sku=item['sku'],
-                        item_name=item['name'],
-                        quantity=item['quantity']
-                    )
-                    session.add(order_item)
+                    ok = await db_subtract(session, item["sku"], item["quantity"])
+                    if not ok:
+                        logger.warning(
+                            "Failed to subtract stock for sku=%s, qty=%s",
+                            item['sku'], item['quantity']
+                        )
 
-                # Вычитаем остатки
-                if getattr(config, "USE_CATALOG_STOCK", False):
-                    for item in cart:
-                        if not subtract(item["sku"], item["quantity"]):
-                            logger.warning(
-                                "Failed to subtract stock for sku=%s, qty=%s",
-                                item['sku'], item['quantity']
-                            )
-
-                await session.commit()
-                await session.refresh(new_order)
+            await session.commit()
+            await session.refresh(new_order)
 
             logger.info(
                 "Order created: id=%s, manager=%s, clinic=%s, items=%s",

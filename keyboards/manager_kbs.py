@@ -4,24 +4,65 @@ from typing import Optional, Dict
 from config import config
 
 try:
-    from catalog_config import TYPE_ANGLES, DIAMETER_RANGE, MAIN_CATEGORIES
+    from catalog_config import TYPE_ANGLES, DIAMETER_RANGE, MAIN_CATEGORIES, get_catalog, get_visibility
 except ImportError:
     TYPE_ANGLES = (0, 17, 25, 30, 15, 20)
     DIAMETER_RANGE = (2.0, 10.0)
     MAIN_CATEGORIES = ["Импланты", "Протетика"]
+    get_catalog = None
+    get_visibility = None
 
-try:
-    from catalog_data import CATALOG, VISIBILITY
-except ImportError:
-    # Fallback если catalog_data.py не найден
-    CATALOG = {
-        "Импланты": {
-            "AnyRidge": {3.5: [8.5, 10.0, 11.5], 4.0: [8.5, 10.0, 11.5]},
-            "AnyOne": {3.5: [8.5, 10.0, 11.5], 4.0: [8.5, 10.0, 11.5]},
-        },
-        "Наборы": {"Surgical Kit": {"no_size": True}},
-    }
-    VISIBILITY = {}
+
+def _get_catalog():
+    """Динамический доступ к каталогу (поддержка hot-reload из БД)."""
+    if get_catalog is not None:
+        return get_catalog()
+    try:
+        from catalog_data import CATALOG
+        return CATALOG
+    except ImportError:
+        return {}
+
+
+def _get_visibility():
+    """Динамический доступ к VISIBILITY."""
+    if get_visibility is not None:
+        return get_visibility()
+    try:
+        from catalog_data import VISIBILITY
+        return VISIBILITY
+    except ImportError:
+        return {}
+
+
+# Свойства-прокси для обратной совместимости (код использует CATALOG и VISIBILITY напрямую)
+class _CatalogProxy:
+    """Прокси-объект, чтобы CATALOG и VISIBILITY всегда читали актуальные данные."""
+    def __init__(self, getter):
+        self._getter = getter
+    def __getattr__(self, name):
+        return getattr(self._getter(), name)
+    def __getitem__(self, key):
+        return self._getter()[key]
+    def __contains__(self, key):
+        return key in self._getter()
+    def __iter__(self):
+        return iter(self._getter())
+    def __len__(self):
+        return len(self._getter())
+    def __bool__(self):
+        return bool(self._getter())
+    def keys(self):
+        return self._getter().keys()
+    def values(self):
+        return self._getter().values()
+    def items(self):
+        return self._getter().items()
+    def get(self, key, default=None):
+        return self._getter().get(key, default)
+
+CATALOG = _CatalogProxy(_get_catalog)
+VISIBILITY = _CatalogProxy(_get_visibility)
 
 # --- Helper Functions ---
 

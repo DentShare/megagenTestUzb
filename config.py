@@ -101,6 +101,7 @@ class Config(BaseSettings):
     ONE_C_PASSWORD: str = Field(default="", description="Пароль 1С")
     ONE_C_TIMEOUT: int = Field(default=30, description="Таймаут запросов к 1С в секундах")
     ONE_C_RETRY_ATTEMPTS: int = Field(default=3, description="Количество попыток при ошибке")
+    ONE_C_SYNC_INTERVAL: int = Field(default=300, description="Интервал polling синхронизации с 1С в секундах")
     
     @field_validator("ONE_C_MODE")
     @classmethod

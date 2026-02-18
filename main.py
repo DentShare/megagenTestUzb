@@ -175,9 +175,13 @@ async def main():
     await wait_for_db()
     
     # Автоматическая синхронизация каталога из Excel при старте
-    # ВАЖНО: Делаем это ДО импорта handlers, чтобы они использовали обновленный каталог
+    # 1) Excel → catalog_data.py (legacy, для обратной совместимости)
+    # 2) Excel → catalog_items в БД (новый путь, для 1С-синхронизации)
+    # 3) DB → CATALOG dict в памяти (мост для текущих keyboards/handlers)
     if config.CATALOG_AUTO_SYNC:
-        logger.info("📦 Starting catalog auto-sync...")
+        logger.info("Starting catalog auto-sync...")
+
+        # Шаг 1: Excel → catalog_data.py (legacy)
         try:
             from services.catalog_loader import load_catalog_automatically
             excel_file = config.CATALOG_EXCEL_FILE if config.CATALOG_EXCEL_FILE else None
@@ -185,13 +189,49 @@ async def main():
                 logger.info("Using specified catalog file: %s", excel_file)
             result = load_catalog_automatically(excel_file)
             if result:
-                logger.info("✅ Catalog auto-sync completed successfully")
+                logger.info("Catalog auto-sync (legacy .py) completed")
             else:
-                logger.warning("⚠️ Catalog auto-sync failed or skipped. Using existing catalog_data.py")
+                logger.warning("Catalog auto-sync (legacy .py) failed or skipped")
         except Exception as e:
-            logger.warning("Failed to auto-sync catalog: %s. Using existing catalog_data.py", e, exc_info=True)
+            logger.warning("Failed to auto-sync catalog (legacy): %s", e)
+
+        # Шаг 2: Excel → DB (catalog_items)
+        try:
+            from services.catalog_loader_db import load_excel_to_db
+            from database.core import session_maker as _sm
+
+            # Ищем Excel файл
+            _excel = config.CATALOG_EXCEL_FILE or ""
+            if not _excel or not Path(_excel).exists():
+                for alt in config.CATALOG_POSSIBLE_FILES_LIST:
+                    if Path(alt).exists():
+                        _excel = alt
+                        break
+
+            if _excel and Path(_excel).exists():
+                async with _sm() as _sess:
+                    stats = await load_excel_to_db(_sess, _excel, deactivate_missing=True)
+                    logger.info(
+                        "Catalog -> DB: parsed=%s, inserted=%s, updated=%s, deactivated=%s",
+                        stats.get("total_parsed", 0), stats.get("inserted", 0),
+                        stats.get("updated", 0), stats.get("deactivated", 0),
+                    )
+            else:
+                logger.warning("No Excel file found for DB catalog sync")
+        except Exception as e:
+            logger.warning("Failed to sync catalog to DB: %s", e, exc_info=True)
+
+        # Шаг 3: DB → CATALOG dict (мост для UI)
+        try:
+            from catalog_config import build_catalog_from_db
+            from database.core import session_maker as _sm
+            async with _sm() as _sess:
+                cat, vis = await build_catalog_from_db(_sess)
+                logger.info("Catalog DB -> memory cache: %d categories", len(cat))
+        except Exception as e:
+            logger.warning("Failed to build catalog from DB: %s", e)
     else:
-        logger.info("📦 Catalog auto-sync is disabled (CATALOG_AUTO_SYNC=false). Using existing catalog_data.py")
+        logger.info("Catalog auto-sync is disabled (CATALOG_AUTO_SYNC=false)")
     
     # Импортируем handlers ПОСЛЕ загрузки каталога
     from handlers import start, admin, manager, warehouse, courier
@@ -292,6 +332,11 @@ async def main():
     dp.message.middleware(message_rate_limit)
     dp.callback_query.middleware(callback_rate_limit)
     
+    # Запуск фоновой синхронизации 1С (polling)
+    from services.one_c_sync import start_polling as start_1c_polling, stop_polling as stop_1c_polling
+    from database.core import session_maker as db_session_maker
+    start_1c_polling(session_maker=db_session_maker, interval=config.ONE_C_SYNC_INTERVAL)
+
     # Include routers (fallback — последним, ловит необработанные обновления)
     dp.include_router(start.router)
     dp.include_router(admin.router)
@@ -351,6 +396,7 @@ async def main():
         raise
     finally:
         logger.info("Closing connections...")
+        stop_1c_polling()
         await bot.session.close()
         if redis_client is not None:
             try:

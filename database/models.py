@@ -2,7 +2,7 @@ import enum
 from datetime import datetime
 from typing import Optional, List
 
-from sqlalchemy import BigInteger, Integer, String, Boolean, ForeignKey, DateTime, Float, Enum as PgEnum, func
+from sqlalchemy import BigInteger, Integer, String, Boolean, ForeignKey, DateTime, Float, Enum as PgEnum, Index, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database.core import Base
@@ -115,3 +115,44 @@ class OrderItem(Base):
     replacement_name: Mapped[Optional[str]] = mapped_column(String, nullable=True)
 
     order: Mapped["Order"] = relationship("Order", back_populates="items")
+
+
+class CatalogItem(Base):
+    """Плоская таблица каталога — единый источник товаров, остатков, навигации."""
+    __tablename__ = "catalog_items"
+
+    id: Mapped[int] = mapped_column(PK_INT, primary_key=True, autoincrement=True)
+
+    # Иерархия навигации
+    category: Mapped[str] = mapped_column(String, nullable=False, index=True)
+    subcategory: Mapped[Optional[str]] = mapped_column(String, nullable=True, index=True)
+    line: Mapped[str] = mapped_column(String, nullable=False, index=True)
+    product_name: Mapped[str] = mapped_column(String, nullable=False)
+
+    # Параметры (nullable для товаров без размеров)
+    product_type: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    diameter: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    diameter_body: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    length: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    height: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+
+    # Товарные данные
+    sku: Mapped[str] = mapped_column(String, unique=True, nullable=False, index=True)
+    unit: Mapped[str] = mapped_column(String, nullable=False, default="шт")
+    qty: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+
+    # Отображение
+    show_immediately: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+
+    # Синхронизация с 1С
+    synced_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+
+    __table_args__ = (
+        Index("ix_catalog_nav", "category", "subcategory", "line"),
+        Index("ix_catalog_params", "category", "line", "diameter", "length"),
+        {"comment": "Каталог товаров"},
+    )
