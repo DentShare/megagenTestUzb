@@ -1338,28 +1338,48 @@ async def process_quantity(message: types.Message, state: FSMContext):
 # --- Cart Logic ---
 
 @router.callback_query(MenuCallback.filter(F.action == "cart"))
-async def view_cart(callback: types.CallbackQuery, callback_data: MenuCallback, state: FSMContext):
+async def view_cart(callback: types.CallbackQuery, callback_data: MenuCallback, state: FSMContext, session: AsyncSession):
     data = await state.get_data()
     cart = data.get('cart', [])
     _log_catalog(callback.from_user.id, "view_cart", callback.data, callback_data=callback_data, show="cart", cart_len=len(cart))
-    
+
     is_urgent = data.get('is_urgent', False)
     delivery_type = data.get('delivery_type', "courier")
-    
+
     if not cart:
         await callback.answer("Корзина пуста", show_alert=True)
         return
-    
+
+    # Получаем остатки из БД для каждого товара в корзине
+    from services.catalog_db import get_qty as db_get_qty
+    stock_info: dict[str, int] = {}
+    for item in cart:
+        sku = item.get('sku', '')
+        if sku:
+            stock_info[sku] = await db_get_qty(session, sku)
+
+    has_warnings = False
     text = "🛒 *Корзина:*\n\n"
     total_qty = 0
     for idx, item in enumerate(cart, 1):
-        text += f"{idx}. {item['name']} — {item['quantity']} шт.\n"
-        total_qty += item['quantity']
-        
+        sku = item.get('sku', '')
+        avail = stock_info.get(sku)
+        qty = item['quantity']
+        total_qty += qty
+        if avail is not None and qty > avail:
+            text += f"{idx}. {item['name']} — {qty} шт. (на складе: {avail}) ⚠️\n"
+            has_warnings = True
+        elif avail is not None:
+            text += f"{idx}. {item['name']} — {qty} шт. (на складе: {avail})\n"
+        else:
+            text += f"{idx}. {item['name']} — {qty} шт.\n"
+
     text += f"\nВсего: {total_qty} шт."
-    
-    await callback.message.edit_text(text, parse_mode="Markdown", 
-                                     reply_markup=make_cart_kb(is_urgent, delivery_type, cart))
+    if has_warnings:
+        text += "\n\n⚠️ Некоторых товаров недостаточно на складе. При оформлении количество будет скорректировано."
+
+    await callback.message.edit_text(text, parse_mode="Markdown",
+                                     reply_markup=make_cart_kb(is_urgent, delivery_type, cart, stock_info))
     await state.set_state(ManagerOrderState.cart_view)
 
 @router.callback_query(MenuCallback.filter(F.action == "clear_cart"))
@@ -1373,121 +1393,104 @@ async def clear_cart(callback: types.CallbackQuery, callback_data: MenuCallback,
     await callback.answer()
 
 @router.callback_query(MenuCallback.filter(F.action == "toggle_urgent"))
-async def toggle_urgent(callback: types.CallbackQuery, callback_data: MenuCallback, state: FSMContext):
+async def toggle_urgent(callback: types.CallbackQuery, callback_data: MenuCallback, state: FSMContext, session: AsyncSession):
     data = await state.get_data()
     new_status = not data.get('is_urgent', False)
     await state.update_data(is_urgent=new_status)
-    await view_cart(callback, callback_data, state)
+    await view_cart(callback, callback_data, state, session)
 
 @router.callback_query(MenuCallback.filter(F.action == "toggle_delivery"))
-async def toggle_delivery(callback: types.CallbackQuery, callback_data: MenuCallback, state: FSMContext):
+async def toggle_delivery(callback: types.CallbackQuery, callback_data: MenuCallback, state: FSMContext, session: AsyncSession):
     data = await state.get_data()
     current = data.get('delivery_type', "courier")
     new = "taxi" if current == "courier" else "courier"
     await state.update_data(delivery_type=new)
-    await view_cart(callback, callback_data, state)
+    await view_cart(callback, callback_data, state, session)
 
 @router.callback_query(MenuCallback.filter(F.action == "increase_qty"))
-async def increase_quantity(callback: types.CallbackQuery, callback_data: MenuCallback, state: FSMContext):
+async def increase_quantity(callback: types.CallbackQuery, callback_data: MenuCallback, state: FSMContext, session: AsyncSession):
     data = await state.get_data()
     cart = data.get('cart', [])
     item_index = callback_data.item_index
     _log_catalog(callback.from_user.id, "increase_qty", callback.data, callback_data=callback_data, show="cart", item_index=item_index, cart_len=len(cart))
-    
+
     if item_index is None or item_index >= len(cart):
         logger.warning("catalog user=%s increase_qty bad item_index=%s cart_len=%s", callback.from_user.id, item_index, len(cart))
         await callback.answer("Ошибка: товар не найден", show_alert=True)
         return
-    
+
     item = cart[item_index]
-    
-    # Validate stock. Протетика/Лаборатория: остаток по артикулу (SKU). Импланты: остаток по длине.
-    if not item.get('no_size'):
-        if item.get('category') in ["Протетика", "Лаборатория"] and item.get('height') is not None:
-            try:
-                from services.catalog_stock import get_qty
-                available_qty = get_qty(item['sku'])
-            except Exception:
-                available_qty = 999
-        else:
-            stock = await get_stock(item['line'], item['diameter'], item.get('diameter_body'))
-            available_qty = stock.get(item['length'], 0)
-        if item['quantity'] >= available_qty:
-            await callback.answer(f"❌ Максимальное количество: {available_qty} шт.", show_alert=True)
-            return
-    elif getattr(config, "USE_CATALOG_STOCK", False):
-        try:
-            from services.catalog_stock import get_qty
-            available_qty = get_qty(item['sku'])
-            if item['quantity'] >= available_qty:
-                await callback.answer(f"❌ Максимальное количество: {available_qty} шт.", show_alert=True)
-                return
-        except Exception:
-            pass
-    
+
+    # Проверяем остаток из БД
+    from services.catalog_db import get_qty as db_get_qty
+    available_qty = await db_get_qty(session, item['sku'])
+    if item['quantity'] >= available_qty:
+        await callback.answer(f"❌ Максимальное количество: {available_qty} шт.", show_alert=True)
+        return
+
     cart[item_index]['quantity'] += 1
     await state.update_data(cart=cart)
-    await view_cart(callback, callback_data, state)
+    await view_cart(callback, callback_data, state, session)
     await callback.answer()
 
 @router.callback_query(MenuCallback.filter(F.action == "decrease_qty"))
-async def decrease_quantity(callback: types.CallbackQuery, callback_data: MenuCallback, state: FSMContext):
+async def decrease_quantity(callback: types.CallbackQuery, callback_data: MenuCallback, state: FSMContext, session: AsyncSession):
     data = await state.get_data()
     cart = data.get('cart', [])
     item_index = callback_data.item_index
     _log_catalog(callback.from_user.id, "decrease_qty", callback.data, callback_data=callback_data, show="cart", item_index=item_index, cart_len=len(cart))
-    
+
     if item_index is None or item_index >= len(cart):
         logger.warning("catalog user=%s decrease_qty bad item_index=%s cart_len=%s", callback.from_user.id, item_index, len(cart))
         await callback.answer("Ошибка: товар не найден", show_alert=True)
         return
-    
+
     if cart[item_index]['quantity'] <= 1:
         await callback.answer("❌ Минимальное количество: 1 шт. Используйте 'Удалить' для удаления.", show_alert=True)
         return
-    
+
     cart[item_index]['quantity'] -= 1
     await state.update_data(cart=cart)
-    await view_cart(callback, callback_data, state)
+    await view_cart(callback, callback_data, state, session)
     await callback.answer()
 
 @router.callback_query(MenuCallback.filter(F.action == "remove_item"))
-async def remove_item(callback: types.CallbackQuery, callback_data: MenuCallback, state: FSMContext):
+async def remove_item(callback: types.CallbackQuery, callback_data: MenuCallback, state: FSMContext, session: AsyncSession):
     data = await state.get_data()
     cart = data.get('cart', [])
     item_index = callback_data.item_index
     _log_catalog(callback.from_user.id, "remove_item", callback.data, callback_data=callback_data, show="cart", item_index=item_index, cart_len=len(cart))
-    
+
     if item_index is None or item_index >= len(cart):
         logger.warning("catalog user=%s remove_item bad item_index=%s cart_len=%s", callback.from_user.id, item_index, len(cart))
         await callback.answer("Ошибка: товар не найден", show_alert=True)
         return
-    
+
     removed_item = cart.pop(item_index)
     logger.info("catalog user=%s remove_item sku=%r name=%r", callback.from_user.id, removed_item.get("sku"), removed_item.get("name"))
     await state.update_data(cart=cart)
-    
+
     if not cart:
         await callback.message.edit_text("Корзина очищена.", reply_markup=make_categories_kb())
         await state.set_state(ManagerOrderState.browsing)
     else:
-        await view_cart(callback, callback_data, state)
-    
+        await view_cart(callback, callback_data, state, session)
+
     await callback.answer(f"✅ {removed_item['name']} удален из корзины")
 
 @router.callback_query(MenuCallback.filter(F.action == "submit_order"))
-async def start_submit_order(callback: types.CallbackQuery, callback_data: MenuCallback, state: FSMContext):
+async def start_submit_order(callback: types.CallbackQuery, callback_data: MenuCallback, state: FSMContext, session: AsyncSession):
     data = await state.get_data()
     cart = data.get('cart', [])
     _log_catalog(callback.from_user.id, "submit_order", callback.data, callback_data=callback_data, show="submit", cart_len=len(cart))
-    
+
     if not cart:
         await callback.answer("Корзина пуста!", show_alert=True)
         return
 
     # Check if clinic is already selected
     if data.get('selected_clinic_id'):
-        await finalize_order(callback, state)
+        await finalize_order(callback, state, session)
     else:
         # Start Clinic Search
         await callback.message.edit_text(
@@ -1563,37 +1566,97 @@ async def select_clinic(callback: types.CallbackQuery, state: FSMContext, sessio
 
 
 async def finalize_order(callback: types.CallbackQuery, state: FSMContext, session: AsyncSession):
-    """Создание заказа через OrderService с транзакцией."""
+    """Создание заказа через OrderService с транзакцией и проверкой остатков."""
     from services.order_service import OrderService
+    from services.catalog_db import get_qty as db_get_qty
     from database.models import DeliveryType
-    
+
     data = await state.get_data()
     cart = data.get('cart', [])
     clinic_id = data.get('selected_clinic_id')
     is_urgent = data.get('is_urgent', False)
     delivery_type_str = data.get('delivery_type', "courier")
-    
+
     items_summary = [(i["sku"], i["quantity"]) for i in cart]
     logger.info(
         "catalog user=%s finalize_order clinic_id=%s cart_len=%s items=%s urgent=%s delivery=%s",
         callback.from_user.id, clinic_id, len(cart), items_summary, is_urgent, delivery_type_str
     )
-    
+
     manager_user = await get_user_by_telegram_id(session, callback.from_user.id, use_cache=True)
     if not manager_user:
         logger.warning("catalog user=%s finalize_order manager_not_found", callback.from_user.id)
         await callback.answer("❌ Ошибка: пользователь не найден", show_alert=True)
         return
-    
+
     if not cart:
         await callback.answer("❌ Корзина пуста", show_alert=True)
         return
-    
+
     if not clinic_id:
         await callback.answer("❌ Клиника не выбрана", show_alert=True)
         return
-    
-    # Создаем заказ через сервис (с транзакцией)
+
+    # --- Проверка остатков перед оформлением ---
+    adjusted = False
+    problems: list[str] = []
+    adjusted_cart: list[dict] = []
+
+    for item in cart:
+        sku = item.get('sku', '')
+        available = await db_get_qty(session, sku)
+        requested = item['quantity']
+
+        if requested > available:
+            if available > 0:
+                problems.append(f"  {item['name']}: {requested} → {available} шт.")
+                adjusted_item = dict(item)
+                adjusted_item['quantity'] = available
+                adjusted_cart.append(adjusted_item)
+            else:
+                problems.append(f"  {item['name']}: нет в наличии (удалён)")
+            adjusted = True
+        else:
+            adjusted_cart.append(dict(item))
+
+    if adjusted:
+        if not adjusted_cart:
+            # Все товары недоступны
+            logger.warning("catalog user=%s finalize_order all_items_unavailable", callback.from_user.id)
+            await state.update_data(cart=[])
+            await callback.message.answer(
+                "❌ Все товары из корзины недоступны на складе.\n"
+                "Корзина очищена.",
+                reply_markup=make_categories_kb()
+            )
+            await state.set_state(ManagerOrderState.browsing)
+            return
+
+        # Сохраняем скорректированную корзину и предлагаем подтвердить
+        await state.update_data(cart=adjusted_cart)
+        text = "⚠️ *Корректировка корзины*\n\nНекоторые товары недоступны в запрошенном количестве:\n\n"
+        text += "\n".join(problems)
+        text += "\n\n*Скорректированная корзина:*\n"
+        for idx, item in enumerate(adjusted_cart, 1):
+            text += f"{idx}. {item['name']} — {item['quantity']} шт.\n"
+        text += "\nОформить заказ с корректировкой?"
+
+        kb = InlineKeyboardMarkup(inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="✅ Да, оформить",
+                    callback_data=MenuCallback(level=99, action="confirm_adjusted").pack()
+                ),
+                InlineKeyboardButton(
+                    text="❌ Отмена",
+                    callback_data=MenuCallback(level=99, action="cart").pack()
+                ),
+            ]
+        ])
+        await callback.message.answer(text, parse_mode="Markdown", reply_markup=kb)
+        return
+
+    # --- Всё в наличии — создаём заказ ---
     delivery_type = DeliveryType(delivery_type_str)
     order, error = await OrderService.create_order(
         session=session,
@@ -1603,25 +1666,29 @@ async def finalize_order(callback: types.CallbackQuery, state: FSMContext, sessi
         is_urgent=is_urgent,
         delivery_type=delivery_type
     )
-    
+
     if error:
-        logger.warning(
-            "catalog user=%s finalize_order failed: %s",
-            callback.from_user.id, error
-        )
+        logger.warning("catalog user=%s finalize_order failed: %s", callback.from_user.id, error)
         await callback.answer(f"❌ {error}", show_alert=True)
         return
-    
+
     if not order:
         await callback.answer("❌ Ошибка создания заказа", show_alert=True)
         return
-    
+
     logger.info(
         "catalog user=%s finalize_order success order_id=%s clinic_id=%s items=%s",
         callback.from_user.id, order.id, clinic_id, items_summary
     )
     await callback.message.answer(f"✅ Заказ #{order.id} успешно создан и отправлен на склад!")
     await state.clear()
+
+
+@router.callback_query(MenuCallback.filter(F.action == "confirm_adjusted"))
+async def confirm_adjusted_order(callback: types.CallbackQuery, callback_data: MenuCallback, state: FSMContext, session: AsyncSession):
+    """Подтверждение заказа после корректировки количества."""
+    logger.info("catalog user=%s confirm_adjusted_order", callback.from_user.id)
+    await finalize_order(callback, state, session)
 
 
 # --- Order Management ---

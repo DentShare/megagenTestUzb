@@ -1650,13 +1650,13 @@ def make_no_size_items_kb(category: str, line: str, stock_data: Dict[str, int]) 
     ])
     return InlineKeyboardMarkup(inline_keyboard=rows)
 
-def make_cart_kb(is_urgent: bool, delivery_type: str, cart: list = None) -> InlineKeyboardMarkup:
+def make_cart_kb(is_urgent: bool, delivery_type: str, cart: list = None, stock_info: dict = None) -> InlineKeyboardMarkup:
     """
     Клавиатура корзины.
-    Настройка: измените расположение кнопок в массиве rows.
+    stock_info: {sku: available_qty} — если передан, показывает предупреждения.
     """
     rows = []
-    
+
     # Кнопки управления корзиной
     rows.append([
         InlineKeyboardButton(
@@ -1664,11 +1664,11 @@ def make_cart_kb(is_urgent: bool, delivery_type: str, cart: list = None) -> Inli
             callback_data=MenuCallback(level=99, action="clear_cart").pack()
         )
     ])
-    
+
     # Кнопки срочности и доставки в одну строку
     urgent_text = "🔥 Срочный" if not is_urgent else "✅ Срочный"
     delivery_text = "🚚 Курьер" if delivery_type == "courier" else "🚕 Такси"
-    
+
     rows.append([
         InlineKeyboardButton(
             text=urgent_text,
@@ -1679,14 +1679,18 @@ def make_cart_kb(is_urgent: bool, delivery_type: str, cart: list = None) -> Inli
             callback_data=MenuCallback(level=99, action="toggle_delivery").pack()
         )
     ])
-    
+
     # Кнопки управления товарами в корзине
     if cart:
         for idx, item in enumerate(cart):
-            item_name_short = item['name'][:30] + "..." if len(item['name']) > 30 else item['name']
+            sku = item.get('sku', '')
+            avail = stock_info.get(sku) if stock_info else None
+            warn = avail is not None and item['quantity'] > avail
+            prefix = "⚠️ " if warn else "➕ "
+            item_name_short = item['name'][:28] + "..." if len(item['name']) > 28 else item['name']
             rows.append([
                 InlineKeyboardButton(
-                    text=f"➕ {item_name_short}",
+                    text=f"{prefix}{item_name_short}",
                     callback_data=MenuCallback(level=99, action="increase_qty", item_index=idx).pack()
                 ),
                 InlineKeyboardButton(
